@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="175" height="58" viewBox="0 0 175 58">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#7a6467"/>
+      <stop offset="1" stop-color="#b5537c"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="0.065" y1="0.171" x2="0.948" y2="0.77" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#ef293a"/>
+      <stop offset="1" stop-color="#c63541"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-3" x1="0.466" y1="0.29" x2="0.354" y2="0.78" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#08aaea"/>
+      <stop offset="1" stop-color="#045575"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-4" x1="0.754" y1="0.203" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#586478"/>
+      <stop offset="1" stop-color="#0d9cc4"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-5" x1="0.63" y1="0.5" x2="0.5" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#0aaa4f"/>
+      <stop offset="1" stop-color="#36b26c"/>
+    </linearGradient>
+    <clipPath id="clip-logo-bapenda">
+      <rect width="175" height="58"/>
+    </clipPath>
+  </defs>
+  <g id="logo-bapenda" clip-path="url(#clip-logo-bapenda)">
+    <rect width="175" height="58" fill="rgba(255,255,255,0)"/>
+    <g id="Group_1" data-name="Group 1" transform="translate(2.519 -27.1)">
+      <path id="Path_2" data-name="Path 2" d="M215.739,168.717s-.747-1.629-.076,1.4-.215,4.436-1.077,4.916a7.485,7.485,0,0,1-2.113.67l5.031,2.858,2.063-1.453,2.273-4.145a26.583,26.583,0,0,0-1.009-3.356C220.635,169.484,215.739,168.717,215.739,168.717Z" transform="translate(-179.758 -117.377)" fill="url(#linear-gradient)"/>
+      <path id="Path_1" data-name="Path 1" d="M132.394,47.718s-1.241,2.73,5.874,6.7,11.823,5.725,13.115,8.181a7.8,7.8,0,0,1,1.109,5.466,6.64,6.64,0,0,1-2.766,4.553,14,14,0,0,1-2.482,1.282s2.689-2.854.786-5.584-12.988-7.611-16.173-10.051a5.885,5.885,0,0,1-1.861-7.156A22.253,22.253,0,0,1,132.394,47.718Z" transform="translate(-109 -13.119)" fill="url(#linear-gradient-2)"/>
+      <path id="Path_3" data-name="Path 3" d="M132.4,47.718s-1.244,2.738,5.89,6.719,12.054,6.231,12.967,8.513a10.649,10.649,0,0,1,.989,5.264,6.2,6.2,0,0,1-2.466,4.473,14.039,14.039,0,0,1-2.489,1.286s2.7-2.862.788-5.6S135.057,60.742,131.863,58.3A5.9,5.9,0,0,1,130,51.12,22.316,22.316,0,0,1,132.4,47.718Z" transform="translate(-108.7 2.175)" fill="url(#linear-gradient-3)"/>
+      <path id="Path_5" data-name="Path 5" d="M123.937,285.72a13.174,13.174,0,0,1,2.77,2.172c1.285,1.347,1.422,1.594,1.531,2.688s-2.375,1.976-2.422,2.188-1.062.422-1.062.422l-1.941.441-5.883-4.667s4.651.914,5.753-.4,1.219-1.688,1.255-2.413S123.937,285.72,123.937,285.72Z" transform="translate(-86.35 -216.851)" fill="url(#linear-gradient-4)"/>
+      <path id="Path_6" data-name="Path 6" d="M54.962,262.274s-6.664-.826-11.123-3.43-4.424-2.829-5.676-4.006a4.4,4.4,0,0,1-1.6-2.854v-.651s-3.329,3.9-1.51,7.511,6.854,5.045,11.678,5.933A9.933,9.933,0,0,0,54.962,262.274Z" transform="translate(-13.726 -187.526)" fill="url(#linear-gradient-5)"/>
+    </g>
+    <text id="bapenda" transform="translate(54 26.8)" fill="#ffffff" font-size="22" font-family="SegoeUI-Bold, Segoe UI" font-weight="700" letter-spacing="0.03em"><tspan x="0" y="0">bapenda</tspan></text>
+    <text id="jakarta" transform="translate(56 46.8)" fill="#ffffff" stroke="#ffffff" stroke-linejoin="round" stroke-width="0.3" font-size="20" font-family="SegoeUI, Segoe UI" letter-spacing="0.07em"><tspan x="0" y="0">jakarta</tspan></text>
+  </g>
+</svg>

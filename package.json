@@ -1,0 +1,10 @@
+{
+  "name": "geobi-v2",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel --filter ./apps/* dev",
+    "build": "pnpm --filter ./packages/* build && pnpm --filter ./apps/* build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  }
+}

@@ -1,0 +1,21 @@
+node_modules/
+dist/
+build/
+out/
+.next/
+.turbo/
+coverage/
+
+.env
+.env.local
+.env.*.local
+.env.development
+.env.production
+
+*.log
+.DS_Store
+Thumbs.db
+
+# Third-party tile server tool: large platform-specific binaries + local DB
+# connection string in config/martin.yaml — not meant for version control.
+MARTIN/
