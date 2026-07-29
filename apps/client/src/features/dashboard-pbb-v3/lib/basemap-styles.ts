@@ -43,3 +43,10 @@ export const ATTR_TEXTS: Record<Basemap, string> = {
   osm: '© OpenStreetMap contributors',
   satellite: '© Esri, Maxar, Earthstar Geographics',
 };
+
+/** Static tile thumbnails (Jakarta area, z9) used as previews on the basemap picker circles. */
+export const BASEMAP_THUMBS: Record<Basemap, string> = {
+  dark: 'https://a.basemaps.cartocdn.com/dark_all/9/407/264.png',
+  osm: 'https://a.tile.openstreetmap.org/9/407/264.png',
+  satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/9/264/407',
+};

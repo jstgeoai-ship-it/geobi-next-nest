@@ -102,27 +102,51 @@
 #map { flex: 1; }
 
 #search-float { position: absolute; top: 12px; right: 12px; z-index: 20; width: 300px; }
-#panel-float { position: absolute; top: 50px; right: 12px; z-index: 10; width: 300px; }
+#panel-float { position: absolute; top: 50px; right: 12px; z-index: 10; width: auto; }
 
-.panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.panel-icon-btn {
-  width: 100%; min-height: 32px;
-  display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 6px;
+.panel-grid {
+  display: flex; flex-direction: column; width: 64px;
   background: rgba(2, 6, 23, 0.92); border: 1px solid rgba(34, 211, 238, .4);
-  border-radius: 7px; color: #22d3ee; font-size: 10.5px; font-weight: 600;
-  padding: 7px 6px; cursor: pointer; white-space: nowrap; line-height: 1;
-  transition: border-color .15s, color .15s, background .15s;
+  border-radius: 28px; padding: 6px 0;
 }
-.panel-icon-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
-.panel-icon-btn:hover { border-color: rgba(34, 211, 238, .5); color: #e2e8f0; }
-.panel-icon-btn.active { border-color: rgba(34, 211, 238, .6); color: #22d3ee; background: rgba(34, 211, 238, .08); }
+.panel-btn-wrap { position: relative; }
+.panel-btn-wrap:first-child .panel-icon-btn { border-top-left-radius: 22px; border-top-right-radius: 22px; }
+.panel-btn-wrap:last-child .panel-icon-btn { border-bottom-left-radius: 22px; border-bottom-right-radius: 22px; }
+.panel-icon-btn {
+  width: 100%; min-height: 50px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  background: transparent; border: none;
+  color: #22d3ee; font-size: 9px; font-weight: 600;
+  padding: 7px 4px; cursor: pointer; white-space: normal; line-height: 1.15; text-align: center;
+  transition: color .15s, background .15s;
+}
+.panel-icon-btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+.panel-icon-btn:hover { background: rgba(34, 211, 238, .1); color: #e2e8f0; }
+.panel-icon-btn.active { color: #ffffff; background: rgba(34, 211, 238, .22); }
 
+@keyframes panelSlideIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(14px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+@keyframes panelSlideInTop {
+  from { opacity: 0; transform: translateX(14px); }
+  to { opacity: 1; transform: translateX(0); }
+}
 .float-panel-dropdown {
-  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  position: absolute; top: 50%; right: calc(100% + 8px); width: 300px;
+  transform: translateY(-50%);
   background: rgba(6, 12, 30, 0.97); border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 10px; padding: 12px; z-index: 30;
   box-shadow: 0 8px 24px rgba(0, 0, 0, .6);
   max-height: 70vh; overflow-y: auto;
+  animation: panelSlideIn .22s cubic-bezier(.34, 1.56, .64, 1) forwards;
+}
+/* Layer Peta / Filter Waktu sit right under the search bar — centering their panel
+   on the button pushes it up into the search bar, so anchor these two to the top instead. */
+.panel-btn-wrap:nth-child(1) .float-panel-dropdown,
+.panel-btn-wrap:nth-child(2) .float-panel-dropdown {
+  top: 0;
+  animation-name: panelSlideInTop;
 }
 
 .tour-help-ctrl {
@@ -208,10 +232,26 @@
 
 .map-tools-ctrl { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .bm-ctrl { display: flex; align-items: center; gap: 6px; background: rgba(2, 6, 23, .85); border: 1px solid rgba(255, 255, 255, .1); border-radius: 22px; padding: 4px 6px; backdrop-filter: blur(6px); pointer-events: auto; }
-.bm-btn { border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .04); color: #cbd5e1; font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 5px 11px; border-radius: 14px; cursor: pointer; transition: all .15s; }
-.bm-btn:hover { background: rgba(255, 255, 255, .1); color: #fff; }
-.bm-btn.bm-active { background: #22d3ee; border-color: #22d3ee; color: #03202a; }
-.bm-label { font-size: 10px; font-weight: 700; color: #c4b5fd; background: rgba(124, 58, 237, .25); border: 1px solid rgba(139, 92, 246, .4); border-radius: 12px; padding: 5px 11px; letter-spacing: .02em; }
+
+.bm-swatches { display: flex; align-items: center; }
+.bm-swatch {
+  width: 0; height: 26px; border-radius: 50%; padding: 0; box-sizing: border-box; flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, .5); background-color: rgba(255, 255, 255, .06);
+  background-size: cover; background-position: center; cursor: pointer;
+  opacity: 0; transform: scale(.3); margin-right: 0; overflow: hidden;
+  transition: width .32s cubic-bezier(.34, 1.56, .64, 1), transform .32s cubic-bezier(.34, 1.56, .64, 1),
+    opacity .22s ease, margin-right .32s ease, border-color .15s, box-shadow .15s;
+}
+.bm-swatch:hover { border-color: #fff; }
+.bm-swatch.bm-active { border-color: #22d3ee; box-shadow: 0 0 0 2px rgba(34, 211, 238, .35); }
+.bm-ctrl.bm-open .bm-swatch { width: 26px; opacity: 1; transform: scale(1); margin-right: 8px; }
+.bm-ctrl.bm-open .bm-swatch:nth-child(1) { transition-delay: .02s; }
+.bm-ctrl.bm-open .bm-swatch:nth-child(2) { transition-delay: .08s; }
+.bm-ctrl.bm-open .bm-swatch:nth-child(3) { transition-delay: .14s; }
+
+.bm-toggle { border: 1px solid rgba(255, 255, 255, .14); background: rgba(255, 255, 255, .04); color: #cbd5e1; font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 6px 12px; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: all .15s; }
+.bm-toggle:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.bm-ctrl.bm-open .bm-toggle { background: #7c3aed; border-color: #7c3aed; color: #fff; }
 
 #stat-chip {
   position: absolute; bottom: 32px; right: 48px;

@@ -20,7 +20,7 @@ export function useParcelFilterSync(mapRef: React.RefObject<MaplibreMap | null>,
 
     const setVis = (ids: string[], on: boolean) =>
       ids.forEach((id) => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none'); });
-    setVis(['tanah-line'], state.showLine);
+    setVis(['tanah-fill', 'tanah-line', 'tanah-hover'], state.showLine);
     setVis(['kec-fill', 'kec-line-casing', 'kec-line'], state.showKecamatan);
     setVis(['kel-fill', 'kel-line-casing', 'kel-line', 'kel-label'], state.showKelurahan);
     // eslint-disable-next-line react-hooks/exhaustive-deps

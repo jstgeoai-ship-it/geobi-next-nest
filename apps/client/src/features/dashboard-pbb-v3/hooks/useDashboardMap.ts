@@ -13,6 +13,14 @@ import { useFiltersStore } from '../store/filters.store';
 const MARTIN = process.env.NEXT_PUBLIC_MARTIN_URL || 'http://localhost:3000';
 const TABLE = 'data_tanah_map';
 
+/** `tanah` source tiles come from our own year-filtered endpoint (not Martin — its
+ *  function-source discovery doesn't work reliably against Supabase's pooler), so the
+ *  server only ever serializes one tahun_pajak's worth of features per tile. */
+export function buildTanahTilesUrl(tahun: string) {
+  const qs = tahun ? `?tahun=${encodeURIComponent(tahun)}` : '';
+  return `/api/tiles/data-tanah-map/{z}/{x}/{y}${qs}`;
+}
+
 const LOC_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r="8"/><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/></svg>`;
 const HOME_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`;
 
@@ -125,7 +133,7 @@ export function useDashboardMap(
       const s = useFiltersStore.getState();
       const setVis = (ids: string[], on: boolean) =>
         ids.forEach((id) => { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', on ? 'visible' : 'none'); });
-      setVis(['tanah-line'], s.showLine);
+      setVis(['tanah-fill', 'tanah-line', 'tanah-hover'], s.showLine);
       setVis(['kec-fill', 'kec-line-casing', 'kec-line'], s.showKecamatan);
       setVis(['kel-fill', 'kel-line-casing', 'kel-line', 'kel-label'], s.showKelurahan);
     }

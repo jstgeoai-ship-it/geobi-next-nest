@@ -81,6 +81,6 @@ export const TOUR_STEPS: TourStep[] = [
   {
     el: '.maplibregl-ctrl-bottom-right',
     title: 'Kontrol Peta',
-    desc: 'Dari atas: <b>My Location</b>, <b>Home</b> (kembali ke tampilan awal), perbesar, perkecil, dan kompas. Di bawahnya tombol basemap <b>DARK / OSM / SAT</b> untuk mengganti latar peta — <b>SAT</b> menampilkan citra satelit.',
+    desc: 'Dari atas: <b>My Location</b>, <b>Home</b> (kembali ke tampilan awal), perbesar, perkecil, dan kompas. Di bawahnya tombol <b>BaseMap</b> — klik untuk membuka 3 pilihan latar peta (Dark / OSM / Satelit).',
   },
 ];

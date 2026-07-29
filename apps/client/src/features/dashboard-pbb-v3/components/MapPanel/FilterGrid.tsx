@@ -25,13 +25,13 @@ function njopOptions(hints: [string, string, string, string]) {
 }
 
 const BUTTONS: { id: PanelId; btnId: string; label: string; icon: string }[] = [
-  { id: 'panelWaktu', btnId: 'btnPanelWaktu', label: 'Filter Waktu', icon: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>' },
-  { id: 'panelKategori', btnId: 'btnPanelKategori', label: 'Kategori PBB', icon: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>' },
-  { id: 'panelWilayah', btnId: 'btnPanelWilayah', label: 'Filter Wilayah', icon: '<path d="M12 21s-7-5.686-7-11a7 7 0 1 1 14 0c0 5.314-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>' },
-  { id: 'panelNjop', btnId: 'btnPanelNjop', label: 'Kategori NJOP Total', icon: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5h5M9.5 12h5M12 9v6"/>' },
-  { id: 'panelStatus', btnId: 'btnPanelStatus', label: 'Status Pembayaran', icon: '<path d="M20 6L9 17l-5-5"/>' },
-  { id: 'panelNjopBumi', btnId: 'btnPanelNjopBumi', label: 'Kategori NJOP Bumi', icon: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>' },
   { id: 'panelLayer', btnId: 'btnPanelLayer', label: 'Layer Peta', icon: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
+  { id: 'panelWaktu', btnId: 'btnPanelWaktu', label: 'Filter Waktu', icon: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>' },
+  { id: 'panelWilayah', btnId: 'btnPanelWilayah', label: 'Filter Wilayah', icon: '<path d="M12 21s-7-5.686-7-11a7 7 0 1 1 14 0c0 5.314-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>' },
+  { id: 'panelStatus', btnId: 'btnPanelStatus', label: 'Status Pembayaran', icon: '<path d="M20 6L9 17l-5-5"/>' },
+  { id: 'panelKategori', btnId: 'btnPanelKategori', label: 'Kategori PBB', icon: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>' },
+  { id: 'panelNjop', btnId: 'btnPanelNjop', label: 'Kategori NJOP Total', icon: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5h5M9.5 12h5M12 9v6"/>' },
+  { id: 'panelNjopBumi', btnId: 'btnPanelNjopBumi', label: 'Kategori NJOP Bumi', icon: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>' },
   { id: 'panelNjopBangunan', btnId: 'btnPanelNjopBangunan', label: 'Kategori NJOP Bangunan', icon: '<path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h2M9 13h2M9 17h2M13 9h2M13 13h2M13 17h2"/>' },
 ];
 
@@ -69,27 +69,14 @@ export function FilterGrid({ waktuPanelVariant }: { waktuPanelVariant: 'segmente
   const toggleStatus = useFiltersStore((s) => s.toggleStatus);
   const setAllStatus = useFiltersStore((s) => s.setAllStatus);
 
-  return (
-    <div id="panel-float" ref={rootRef}>
-      <div className="panel-grid">
-        {BUTTONS.map((b) => (
-          <button
-            key={b.id}
-            id={b.btnId}
-            className={`panel-icon-btn${openPanel === b.id ? ' active' : ''}`}
-            type="button"
-            onClick={() => togglePanel(b.id)}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: b.icon }} />
-            {b.label}
-          </button>
-        ))}
-      </div>
-
-      {openPanel === 'panelWilayah' && <div className="float-panel-dropdown open"><WilayahPanel /></div>}
-      {openPanel === 'panelWaktu' && <div className="float-panel-dropdown open"><WaktuPanel variant={waktuPanelVariant} /></div>}
-      {openPanel === 'panelKategori' && (
-        <div className="float-panel-dropdown open">
+  function renderPanelContent(id: PanelId) {
+    switch (id) {
+      case 'panelWilayah':
+        return <WilayahPanel />;
+      case 'panelWaktu':
+        return <WaktuPanel variant={waktuPanelVariant} />;
+      case 'panelKategori':
+        return (
           <CategoryPanel
             title="Kategori PBB yang Harus Bayar"
             options={KATEGORI_PBB_OPTIONS.map((v) => ({ value: v, ...KATEGORI_PBB_LABELS[v] }))}
@@ -97,25 +84,40 @@ export function FilterGrid({ waktuPanelVariant }: { waktuPanelVariant: 'segmente
             onToggle={toggleKategoriPbb}
             onSetAll={setAllKategoriPbb}
           />
-        </div>
-      )}
-      {openPanel === 'panelNjop' && (
-        <div className="float-panel-dropdown open">
-          <CategoryPanel title="Kategori NJOP Total" options={njopOptions(['> Rp 7,70 M', 'Rp 3,52 M – 7,69 M', '< Rp 3,52 M', 'Rp 0'])} selected={kategoriNjop} onToggle={toggleKategoriNjop} onSetAll={setAllKategoriNjop} />
-        </div>
-      )}
-      {openPanel === 'panelStatus' && <div className="float-panel-dropdown open"><StatusPanel selected={status} onToggle={toggleStatus} onSetAll={setAllStatus} /></div>}
-      {openPanel === 'panelNjopBumi' && (
-        <div className="float-panel-dropdown open">
-          <CategoryPanel title="Kategori NJOP Bumi" options={njopOptions(['> Rp 6,15 M', 'Rp 2,75 M – 6,14 M', '< Rp 2,75 M', 'Rp 0'])} selected={kategoriNjopBumi} onToggle={toggleKategoriNjopBumi} onSetAll={setAllKategoriNjopBumi} />
-        </div>
-      )}
-      {openPanel === 'panelLayer' && <div className="float-panel-dropdown open"><LayerPanel /></div>}
-      {openPanel === 'panelNjopBangunan' && (
-        <div className="float-panel-dropdown open">
-          <CategoryPanel title="Kategori NJOP Bangunan" options={njopOptions(['> Rp 1,48 M', 'Rp 0,6 M – 1,48 M', '< Rp 0,6 M', 'Rp 0'])} selected={kategoriNjopBangunan} onToggle={toggleKategoriNjopBangunan} onSetAll={setAllKategoriNjopBangunan} />
-        </div>
-      )}
+        );
+      case 'panelNjop':
+        return <CategoryPanel title="Kategori NJOP Total" options={njopOptions(['> Rp 7,70 M', 'Rp 3,52 M – 7,69 M', '< Rp 3,52 M', 'Rp 0'])} selected={kategoriNjop} onToggle={toggleKategoriNjop} onSetAll={setAllKategoriNjop} />;
+      case 'panelStatus':
+        return <StatusPanel selected={status} onToggle={toggleStatus} onSetAll={setAllStatus} />;
+      case 'panelNjopBumi':
+        return <CategoryPanel title="Kategori NJOP Bumi" options={njopOptions(['> Rp 6,15 M', 'Rp 2,75 M – 6,14 M', '< Rp 2,75 M', 'Rp 0'])} selected={kategoriNjopBumi} onToggle={toggleKategoriNjopBumi} onSetAll={setAllKategoriNjopBumi} />;
+      case 'panelLayer':
+        return <LayerPanel />;
+      case 'panelNjopBangunan':
+        return <CategoryPanel title="Kategori NJOP Bangunan" options={njopOptions(['> Rp 1,48 M', 'Rp 0,6 M – 1,48 M', '< Rp 0,6 M', 'Rp 0'])} selected={kategoriNjopBangunan} onToggle={toggleKategoriNjopBangunan} onSetAll={setAllKategoriNjopBangunan} />;
+      default:
+        return null;
+    }
+  }
+
+  return (
+    <div id="panel-float" ref={rootRef}>
+      <div className="panel-grid">
+        {BUTTONS.map((b) => (
+          <div key={b.id} className="panel-btn-wrap">
+            <button
+              id={b.btnId}
+              className={`panel-icon-btn${openPanel === b.id ? ' active' : ''}`}
+              type="button"
+              onClick={() => togglePanel(b.id)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: b.icon }} />
+              {b.label}
+            </button>
+            {openPanel === b.id && <div className="float-panel-dropdown">{renderPanelContent(b.id)}</div>}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
