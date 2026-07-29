@@ -59,13 +59,16 @@ export function DonutChart({ stats }: { stats?: PbbAggregateRow }) {
         },
       },
       animation: { animateRotate: true, duration: 800 },
+      maintainAspectRatio: false,
     }),
     [sudah, belum, nol, batal, total, realisasiRp, belumRp, batalRp],
   );
 
   return (
     <div className="chart-box" style={{ padding: 10, position: 'relative' }}>
-      <Doughnut data={data} options={options as any} height={180} />
+      <div style={{ height: 180 }}>
+        <Doughnut data={data} options={options as any} />
+      </div>
     </div>
   );
 }

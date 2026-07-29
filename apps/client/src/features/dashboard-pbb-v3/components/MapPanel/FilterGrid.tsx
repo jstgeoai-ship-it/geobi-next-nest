@@ -109,10 +109,11 @@ export function FilterGrid({ waktuPanelVariant }: { waktuPanelVariant: 'segmente
               id={b.btnId}
               className={`panel-icon-btn${openPanel === b.id ? ' active' : ''}`}
               type="button"
+              data-label={b.label}
+              aria-label={b.label}
               onClick={() => togglePanel(b.id)}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: b.icon }} />
-              {b.label}
             </button>
             {openPanel === b.id && <div className="float-panel-dropdown">{renderPanelContent(b.id)}</div>}
           </div>
