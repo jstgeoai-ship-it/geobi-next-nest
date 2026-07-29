@@ -29,15 +29,69 @@
 #workspace { flex: 1; display: flex; overflow: clip; min-height: 0; }
 
 #sidebar {
-  width: 300px; flex-shrink: 0;
+  width: clamp(300px, 25vw, 440px); flex-shrink: 0;
   background: rgba(6, 12, 30, 0.95);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex; flex-direction: column;
   overflow-y: auto; overflow-x: hidden;
+  transition: width .28s cubic-bezier(.4, 0, .2, 1);
 }
+#sidebar.collapsed { width: 44px; }
 #sidebar::-webkit-scrollbar { width: 4px; }
 #sidebar::-webkit-scrollbar-track { background: transparent; }
 #sidebar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 2px; }
+
+/* Shown only while #sidebar.collapsed — matches the map-filter icon strip's pill styling
+   (.panel-grid/.panel-icon-btn) so collapsed sidebar reads as the same design language.
+   Pembayaran/Time Series double as tab shortcuts: clicking one expands + switches tab. */
+@keyframes collapsedStripIn {
+  from { opacity: 0; transform: scale(.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+.sidebar-collapsed-strip {
+  margin: 10px auto 0; width: 30px;
+  display: flex; flex-direction: column;
+  background: rgba(2, 6, 23, 0.92); border: 1px solid rgba(34, 211, 238, .4);
+  border-radius: 20px; padding: 4px 0;
+  animation: collapsedStripIn .22s cubic-bezier(.34, 1.56, .64, 1) forwards;
+}
+.sidebar-collapsed-btn {
+  width: 100%; min-height: 34px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none;
+  color: #22d3ee; cursor: pointer;
+  transition: color .15s, background .15s;
+}
+.sidebar-collapsed-btn:first-child { border-top-left-radius: 16px; border-top-right-radius: 16px; }
+.sidebar-collapsed-btn:last-child { border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
+.sidebar-collapsed-btn:hover { background: rgba(34, 211, 238, .1); color: #e2e8f0; }
+.sidebar-collapsed-btn.active { color: #ffffff; background: rgba(34, 211, 238, .22); }
+
+.sidebar-tabs-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 12px 0; flex-shrink: 0; position: sticky; top: 0; z-index: 5;
+  background: rgba(6, 12, 30, 0.95);
+}
+.sidebar-tabs {
+  flex: 1; display: flex; gap: 0;
+  background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px; padding: 3px;
+}
+.sidebar-tab-btn {
+  flex: 1; border: none; background: transparent; cursor: pointer;
+  padding: 8px 10px; text-align: center; font-size: 11px; font-weight: 700;
+  color: #94a3b8; letter-spacing: .02em; border-radius: 5px;
+  transition: background .15s, color .15s;
+}
+.sidebar-tab-btn.active { background: rgba(34, 211, 238, .14); color: #22d3ee; box-shadow: 0 0 0 1px rgba(34, 211, 238, .32) inset; }
+.sidebar-close-btn {
+  flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  padding: 6px 10px; border-radius: 8px;
+  background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8; font-size: 9px; font-weight: 600; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.sidebar-close-btn:hover { background: rgba(34, 211, 238, .1); color: #e2e8f0; }
 
 .sidebar-section { padding: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
 .sidebar-label { font-size: 10px; font-weight: 700; color: #ffffff; text-transform: uppercase; letter-spacing: .09em; margin-bottom: 10px; }
@@ -113,16 +167,28 @@
 .panel-btn-wrap:first-child .panel-icon-btn { border-top-left-radius: 22px; border-top-right-radius: 22px; }
 .panel-btn-wrap:last-child .panel-icon-btn { border-bottom-left-radius: 22px; border-bottom-right-radius: 22px; }
 .panel-icon-btn {
-  width: 100%; min-height: clamp(32px, 6vh, 50px);
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(2px, 0.6vh, 4px);
+  width: 100%; min-height: clamp(34px, 5vh, 44px); position: relative;
+  display: flex; align-items: center; justify-content: center;
   background: transparent; border: none;
-  color: #22d3ee; font-size: clamp(7px, 1.15vh, 9px); font-weight: 600;
-  padding: clamp(3px, 1vh, 7px) 4px; cursor: pointer; white-space: normal; line-height: 1.15; text-align: center;
-  transition: color .15s, background .15s;
+  color: #22d3ee; cursor: pointer;
+  padding: 6px; transition: color .15s, background .15s;
 }
-.panel-icon-btn svg { width: clamp(12px, 2.3vh, 17px); height: clamp(12px, 2.3vh, 17px); flex-shrink: 0; }
+.panel-icon-btn svg { width: clamp(15px, 2.4vh, 19px); height: clamp(15px, 2.4vh, 19px); flex-shrink: 0; }
 .panel-icon-btn:hover { background: rgba(34, 211, 238, .1); color: #e2e8f0; }
 .panel-icon-btn.active { color: #ffffff; background: rgba(34, 211, 238, .22); }
+
+/* Tooltip: label only shows on hover, to the left of the icon, since the button itself is icon-only now. */
+.panel-icon-btn::after {
+  content: attr(data-label);
+  position: absolute; top: 50%; right: calc(100% + 8px); transform: translateY(-50%) translateX(4px);
+  background: rgba(6, 12, 30, 0.97); border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #e2e8f0; font-size: 10.5px; font-weight: 600; white-space: nowrap;
+  padding: 5px 10px; border-radius: 6px; box-shadow: 0 4px 14px rgba(0, 0, 0, .5);
+  opacity: 0; pointer-events: none; z-index: 40;
+  transition: opacity .12s ease, transform .12s ease;
+}
+.panel-icon-btn:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
+.panel-icon-btn.active::after { display: none; }
 
 @keyframes panelSlideIn {
   from { opacity: 0; transform: translateY(-50%) translateX(14px); }

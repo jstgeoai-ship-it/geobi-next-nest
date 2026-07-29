@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './lib/chart-setup';
 import './dashboard.css';
 import { Navbar } from '@/components/Navbar';
@@ -19,6 +19,8 @@ export function DashboardPbbV3() {
   const tahun = useFiltersStore((s) => s.tahun);
   const setTahun = useFiltersStore((s) => s.setTahun);
   const tour = useTour();
+  // Always starts open on a fresh page load — collapse state is transient UI, not persisted.
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Matched to v2: seeds tahun = tahunTerbaru() by default (config.defaultTahunFilter).
   useEffect(() => {
@@ -33,7 +35,14 @@ export function DashboardPbbV3() {
     <div className="dashboard-root">
       <Navbar />
       <div id="workspace">
-        <Sidebar showGauge={config.showGauge} stats={stats} tahunAktif={tahun} error={error ? String(error) : null} />
+        <Sidebar
+          showGauge={config.showGauge}
+          stats={stats}
+          tahunAktif={tahun}
+          error={error ? String(error) : null}
+          collapsed={sidebarCollapsed}
+          onToggleCollapsed={() => setSidebarCollapsed((c) => !c)}
+        />
         <MapPanel
           showScaleControl={config.showScaleControl}
           showBasemapSwitcher={config.showBasemapSwitcher}
