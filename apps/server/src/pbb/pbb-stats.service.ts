@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { PbbAggregateRow, StatsFilter, STATUS_PEM } from '@geobi/shared';
+import { PbbAggregateRow, StatsFilter, STATUS_PEM, WilayahRealisasiRow } from '@geobi/shared';
 import { QueryService } from '../database/query.util';
 import { buildWhereClause } from './filters.builder';
 
 const T_ATRIBUT = 'data_tanah_atribut';
+const WILAYAH_GROUP_COLUMNS = { rt: 'rt', rw: 'rw' } as const;
 
 /** Port of PetaPbbController::aggregate()/tahunTerbaru()/daftarTahun(). */
 @Injectable()
@@ -68,5 +69,31 @@ export class PbbStatsService {
       `SELECT DISTINCT tahun_pajak FROM ${T_ATRIBUT} WHERE tahun_pajak IS NOT NULL ORDER BY tahun_pajak DESC`,
     );
     return rows.map((r) => r.tahun_pajak);
+  }
+
+  /** Realisasi-vs-target breakdown per RT or RW — feeds the map's floating bar chart panel.
+   *  groupBy must come from WILAYAH_GROUP_COLUMNS, never straight from the request. */
+  async aggregateByWilayah(filter: StatsFilter, groupBy: 'rt' | 'rw'): Promise<WilayahRealisasiRow[]> {
+    const column = WILAYAH_GROUP_COLUMNS[groupBy];
+    const { sql: whereSql, params } = buildWhereClause(filter);
+
+    const sql = `
+      SELECT
+        ${column} AS label,
+        COALESCE(SUM(pbb_telah_bayar), 0) AS realisasi_rp,
+        COALESCE(SUM(pbb_telah_bayar), 0) + COALESCE(SUM(pbb_belum_bayar), 0) AS target_rp
+      FROM ${T_ATRIBUT}
+      ${whereSql}
+      ${whereSql ? 'AND' : 'WHERE'} ${column} IS NOT NULL AND ${column} <> ''
+      GROUP BY ${column}
+      ORDER BY ${column}
+    `;
+
+    const rows = await this.db.query<{ label: string; realisasi_rp: string; target_rp: string }>(sql, params);
+    return rows.map((r) => {
+      const realisasi = Number(r.realisasi_rp);
+      const target = Number(r.target_rp);
+      return { label: r.label, realisasi_rp: realisasi, target_rp: target, pct: target > 0 ? Math.round((realisasi / target) * 1000) / 10 : 0 };
+    });
   }
 }
