@@ -20,7 +20,7 @@ export function KpiGrid({ stats }: { stats?: PbbAggregateRow }) {
             <div style={{ lineHeight: 1 }}>
               <span style={{ fontSize: '1.1rem', fontWeight: 800, color: t.color }}>{angka(stats?.[t.key])}</span>
             </div>
-            <div style={{ fontSize: 9, color: '#ffffff' }}>persil</div>
+            <div style={{ fontSize: 9, color: '#ffffff' }}>SPPT</div>
             <div style={{ fontSize: 10, color: '#ffffff', textAlign: 'center', minHeight: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1.25 }}>
               {t.label}
             </div>

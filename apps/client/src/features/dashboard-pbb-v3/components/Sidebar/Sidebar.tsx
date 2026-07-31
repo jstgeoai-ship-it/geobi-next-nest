@@ -6,16 +6,10 @@ import { GaugeCard } from './GaugeCard';
 import { KpiGrid } from './KpiGrid';
 import { DistributionTable } from './DistributionTable';
 import { DonutChart } from './DonutChart';
+import { rupiahM } from '../../lib/format';
 
-// Helper function to format currency
-const formatCurrency = (amount: number): string => {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-};
+// Helper function to format currency (singkat, format "Rp X,XX M" — supaya gak pernah wrap ganjil pas di-zoom)
+const formatCurrency = rupiahM;
 
 // Helper function to format number
 const formatNumber = (num: number): string => {
@@ -30,53 +24,39 @@ function TimeSeriesContent({ stats, tahunAktif }: { stats?: PbbAggregateRow; tah
 
   // Calculate derived values
   const totalSppt = stats.sudah_bayar + stats.belum_bayar + stats.pbb_nol + stats.dibatalkan + stats.lainnya;
-  const sudahBayarPersentase = totalSppt > 0 ? (stats.sudah_bayar / totalSppt) * 100 : 0;
-  const belumBayarPersentase = totalSppt > 0 ? (stats.belum_bayar / totalSppt) * 100 : 0;
-  const pbbNolPersentase = totalSppt > 0 ? (stats.pbb_nol / totalSppt) * 100 : 0;
-  const dibatalkanPersentase = totalSppt > 0 ? (stats.dibatalkan / totalSppt) * 100 : 0;
   const lainnyaPersentase = totalSppt > 0 ? (stats.lainnya / totalSppt) * 100 : 0;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-3">
       {/* Tahun Pajak */}
       <div className="text-center text-sm font-medium text-slate-400 bg-slate-900/30 rounded-xl px-3 py-2">
         Tahun Pajak 2017-2026
       </div>
 
-      {/* Akumulasi Realisasi Pembayaran PBB-P2 */}
-      <div className="bg-gradient-to-r from-emerald-900/30 via-emerald-900/10 to-transparent rounded-xl p-4">
-        <div className="text-xs text-emerald-300 mb-2">Akumulasi Realisasi Pembayaran PBB-P2</div>
-        <div className="text-2xl font-bold text-emerald-400">{formatCurrency(stats.realisasi_rp)}</div>
-      </div>
+      {/* Akumulasi Realisasi Pembayaran PBB-P2 — judul polos, sejajar posisi sama seperti di GaugeCard tab Pembayaran */}
+      <div className="sidebar-label text-center">Akumulasi Realisasi Pembayaran PBB-P2</div>
 
-      {/* Gauge Chart and Line Chart (side by side) */}
-      <div className="grid gap-3">
-        {/* Gauge Chart */}
-        <div className="bg-gradient-to-r from-blue-900/30 via-blue-900/10 to-transparent rounded-xl p-3">
-          <div className="text-xs text-blue-300 mb-1">Capaian Realisasi 2017-2026</div>
-          <div className="h-[150px]">
-            <GaugeCard
-              stats={stats}
-              tahunAktif={tahunAktif}
-            />
-          </div>
+      {/* Gauge Chart dan Line Chart bersebelahan (2 kolom), sesuai posisi di desain */}
+      <div className="grid grid-cols-2 gap-3 items-stretch">
+        {/* Gauge Chart (versi compact, tanpa badge/kartu duplikat) */}
+        <div className="bg-gradient-to-r from-blue-900/30 via-blue-900/10 to-transparent rounded-xl p-3 flex flex-col justify-center border border-blue-500/30">
+          <div className="text-xs text-blue-300 mb-1 text-center">Capaian Realisasi</div>
+          <GaugeCard stats={stats} tahunAktif={tahunAktif} variant="compact" />
         </div>
 
         {/* Line Chart Placeholder */}
-        <div className="bg-gradient-to-r from-indigo-900/30 via-indigo-900/10 to-transparent rounded-xl p-3">
-          <div className="text-xs text-indigo-300 mb-1">Tren Realisasi Tahunan 2017-2026</div>
-          <div className="h-[150px] flex items-center justify-center">
-            <div className="bg-slate-800 rounded-xl p-3">
-              <span className="text-slate-500">Line Chart Placeholder</span>
-            </div>
-          </div>
-          <div className="mt-1 text-xs text-indigo-300 text-center">
-            Tahun Pajak: 2017 - 2026
-          </div>
-          <div className="mt-0.5 text-xs text-slate-400 text-center">
-            * Grafik garis akan menampilkan tren tahunan saat data tersedia
+        <div className="bg-gradient-to-r from-indigo-900/30 via-indigo-900/10 to-transparent rounded-xl p-3 flex flex-col justify-center border border-indigo-500/30">
+          <div className="text-xs text-indigo-300 mb-1 text-center">Tren Realisasi Tahunan</div>
+          <div className="h-[104px] flex items-center justify-center">
+            <span className="text-slate-500 text-[11px] text-center">Line Chart Placeholder</span>
           </div>
         </div>
+      </div>
+      <div className="text-xs text-indigo-300 text-center -mt-2">
+        Tahun Pajak: 2017 - 2026
+      </div>
+      <div className="text-xs text-slate-400 text-center">
+        * Grafik garis akan menampilkan tren tahunan saat data tersedia
       </div>
 
       {/* DARI AKUMULASI PBB YANG HARUS DIBAYAR */}
@@ -87,59 +67,40 @@ function TimeSeriesContent({ stats, tahunAktif }: { stats?: PbbAggregateRow; tah
       {/* Realisasi, Target, dan Belum Realisasi (side by side) */}
       <div className="grid grid-cols-3 gap-3">
         {/* Realisasi */}
-        <div className="bg-gradient-to-r from-green-900/30 via-green-900/10 to-transparent rounded-xl p-3 text-center">
-          <div className="text-xs text-green-300">REALISASI</div>
-          <div className="font-semibold text-green-400">{formatCurrency(stats.realisasi_rp)}</div>
+        <div className="bg-gradient-to-r from-green-900/30 via-green-900/10 to-transparent rounded-xl p-3 text-center border border-green-500/30">
+          <div className="text-[10px] tracking-wide text-green-300">REALISASI</div>
+          <div className="text-[13px] font-bold text-green-400 leading-tight mt-1 break-words">{formatCurrency(stats.realisasi_rp)}</div>
         </div>
 
         {/* Target */}
-        <div className="bg-gradient-to-r from-blue-900/30 via-blue-900/10 to-transparent rounded-xl p-3 text-center">
-          <div className="text-xs text-blue-300">TARGET</div>
-          <div className="font-semibold text-blue-400">{formatCurrency(stats.target_rp)}</div>
+        <div className="bg-gradient-to-r from-blue-900/30 via-blue-900/10 to-transparent rounded-xl p-3 text-center border border-blue-500/30">
+          <div className="text-[10px] tracking-wide text-blue-300">TARGET</div>
+          <div className="text-[13px] font-bold text-blue-400 leading-tight mt-1 break-words">{formatCurrency(stats.target_rp)}</div>
         </div>
 
         {/* Belum Realisasi */}
-        <div className="bg-gradient-to-r from-yellow-900/30 via-yellow-900/10 to-transparent rounded-xl p-3 text-center">
-          <div className="text-xs text-yellow-300">BELUM REA</div>
-          <div className="font-semibold text-yellow-400">{formatCurrency(stats.belum_rp)}</div>
+        <div className="bg-gradient-to-r from-yellow-900/30 via-yellow-900/10 to-transparent rounded-xl p-3 text-center border border-yellow-500/30">
+          <div className="text-[10px] tracking-wide text-yellow-300">BELUM REA</div>
+          <div className="text-[13px] font-bold text-yellow-400 leading-tight mt-1 break-words">{formatCurrency(stats.belum_rp)}</div>
         </div>
       </div>
 
       {/* Total SPPT */}
-      <div className="bg-gradient-to-r from-purple-900/30 via-purple-900/10 to-transparent rounded-xl p-4 mt-3">
-        <div className="text-xs text-purple-300 mb-2">TOTAL SPPT</div>
-        <div className="text-lg font-semibold text-purple-400">{formatNumber(totalSppt)}</div>
-        <div className="text-xs text-purple-300 mt-1">Unit</div>
+      <div className="bg-gradient-to-r from-purple-900/30 via-purple-900/10 to-transparent rounded-xl p-4 mt-3 text-center border border-purple-500/30">
+        <div className="text-[10px] tracking-wide text-purple-300 mb-1">TOTAL SPPT</div>
+        <div className="text-2xl font-bold text-purple-400">{formatNumber(totalSppt)}</div>
+        <div className="text-[10px] tracking-wide text-purple-300 mt-1">Objek</div>
       </div>
 
-      {/* RINGKASAN DATA */}
-      <div className="text-xs text-slate-400 font-medium bg-slate-900/20 rounded-xl px-3 py-2 mt-4">
-        RINGKASAN DATA
+      {/* RINGKASAN DATA — pakai komponen KpiGrid yang sama dgn tab Pembayaran, biar posisi (4 kartu sejajar) konsisten sesuai desain */}
+      <div className="-mx-0">
+        <KpiGrid stats={stats} />
       </div>
-
-      {/* SPPT yang sudah bayar, dll */}
-      <div className="grid grid-cols-2 gap-3 mt-2">
-        <div className="bg-gradient-to-r from-teal-900/30 via-teal-900/10 to-transparent rounded-xl p-3">
-          <div className="text-xs text-teal-300">SPPT Sudah Bayar</div>
-          <div className="font-semibold text-teal-400">{formatNumber(stats.sudah_bayar)} ({sudahBayarPersentase.toFixed(1)}%)</div>
+      {stats.lainnya > 0 && (
+        <div className="text-[11px] text-indigo-300 text-center -mt-2">
+          SPPT Lainnya: {formatNumber(stats.lainnya)} ({lainnyaPersentase.toFixed(1)}%)
         </div>
-        <div className="bg-gradient-to-r from-red-900/30 via-red-900/10 to-transparent rounded-xl p-3">
-          <div className="text-xs text-red-300">SPPT Belum Bayar</div>
-          <div className="font-semibold text-red-400">{formatNumber(stats.belum_bayar)} ({belumBayarPersentase.toFixed(1)}%)</div>
-        </div>
-        <div className="bg-gradient-to-r from-amber-900/30 via-amber-900/10 to-transparent rounded-xl p-3">
-          <div className="text-xs text-amber-300">SPPT PBB Nol</div>
-          <div className="font-semibold text-amber-400">{formatNumber(stats.pbb_nol)} ({pbbNolPersentase.toFixed(1)}%)</div>
-        </div>
-        <div className="bg-gradient-to-r from-slate-900/30 via-slate-900/10 to-transparent rounded-xl p-3">
-          <div className="text-xs text-slate-300">SPPT Dibatalkan</div>
-          <div className="font-semibold text-slate-400">{formatNumber(stats.dibatalkan)} ({dibatalkanPersentase.toFixed(1)}%)</div>
-        </div>
-        <div className="bg-gradient-to-r from-indigo-900/30 via-indigo-900/10 to-transparent rounded-xl p-3">
-          <div className="text-xs text-indigo-300">SPPT Lainnya</div>
-          <div className="font-semibold text-indigo-400">{formatNumber(stats.lainnya)} ({lainnyaPersentase.toFixed(1)}%)</div>
-        </div>
-      </div>
+      )}
 
       {/* DISTRIBUSI STATUS PEMBAYARAN */}
       <div className="mt-4">
@@ -155,28 +116,7 @@ function TimeSeriesContent({ stats, tahunAktif }: { stats?: PbbAggregateRow; tah
         </div>
 
         {/* Tabel Keterangan Donut Chart */}
-        <div className="space-y-1 text-xs">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-            <span className="text-green-300">Sudah Bayar ({sudahBayarPersentase.toFixed(1)}%)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-            <span className="text-red-300">Belum Bayar ({belumBayarPersentase.toFixed(1)}%)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
-            <span className="text-amber-300">PBB Nol ({pbbNolPersentase.toFixed(1)}%)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-slate-400 rounded-full"></div>
-            <span className="text-slate-300">Dibatalkan ({dibatalkanPersentase.toFixed(1)}%)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-indigo-400 rounded-full"></div>
-            <span className="text-indigo-300">Lainnya ({lainnyaPersentase.toFixed(1)}%)</span>
-          </div>
-        </div>
+        <DistributionTable stats={stats} />
       </div>
     </div>
   );
@@ -200,11 +140,6 @@ export function Sidebar({ showGauge, stats, tahunAktif, error, collapsed, onTogg
     <aside id="sidebar" className={collapsed ? 'collapsed' : ''}>
       {collapsed ? (
         <div className="sidebar-collapsed-strip">
-          <button type="button" className="sidebar-collapsed-btn" onClick={onToggleCollapsed} title="Buka sidebar" aria-label="Buka sidebar">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 6 15 12 9 18" />
-            </svg>
-          </button>
           <button
             type="button"
             className={`sidebar-collapsed-btn${tab === 'pembayaran' ? ' active' : ''}`}
@@ -257,8 +192,8 @@ export function Sidebar({ showGauge, stats, tahunAktif, error, collapsed, onTogg
               <KpiGrid stats={stats} />
               <div id="tour-distribusi" className="sidebar-section">
                 <div className="sidebar-label">Distribusi Status Pembayaran</div>
-                <DistributionTable stats={stats} />
                 <DonutChart stats={stats} />
+                <DistributionTable stats={stats} />
               </div>
               {error && (
                 <div className="sidebar-section">

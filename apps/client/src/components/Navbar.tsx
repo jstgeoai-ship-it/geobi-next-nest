@@ -31,7 +31,7 @@ export function Navbar() {
   // Kelas dasar untuk setiap trigger menu top-level (link biasa & dropdown button)
 
   const navItemClass = (active: boolean, hoverOpen = false) =>
-  `flex items-center gap-1 px-2 rounded-lg text-[9.8px] font-medium transition-colors ${
+  `flex items-center gap-1 px-2 rounded-lg text-[12px] font-medium transition-colors ${
     active ? 'text-orange-400 font-semibold' : 'text-white/80 hover:text-white hover:bg-white/5'
   } ${hoverOpen ? 'bg-white/5' : ''}`;
 
@@ -372,10 +372,10 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-3 shrink-0">
           {user ? (
             <>
-              <Link href="/profile" className="text-xs text-slate-400 hover:text-white transition-colors whitespace-nowrap">
+              <Link href="/profile" className="text-[12.5px] text-slate-400 hover:text-white transition-colors whitespace-nowrap">
                 {user.name}
               </Link>
-              <button onClick={handleLogout} className="text-xs px-3 py-2 rounded-lg text-red-400 hover:bg-red-400/10 transition-colors whitespace-nowrap">
+              <button onClick={handleLogout} className="text-[12.5px] px-3 py-2 rounded-lg text-red-400 hover:bg-red-400/10 transition-colors whitespace-nowrap">
                 Logout
               </button>
             </>
