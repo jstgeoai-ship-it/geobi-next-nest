@@ -50,11 +50,11 @@ function TimeSeriesContent({ stats, tahunAktif }: { stats?: PbbAggregateRow; tah
       </div>
 
       {/* Gauge Chart and Line Chart (side by side) */}
-      <div className="grid gap-4">
+      <div className="grid gap-3">
         {/* Gauge Chart */}
-        <div className="bg-gradient-to-r from-blue-900/30 via-blue-900/10 to-transparent rounded-xl p-4">
-          <div className="text-xs text-blue-300 mb-2">Capaian Realisasi 2017-2026</div>
-          <div className="min-h-[200px]">
+        <div className="bg-gradient-to-r from-blue-900/30 via-blue-900/10 to-transparent rounded-xl p-3">
+          <div className="text-xs text-blue-300 mb-1">Capaian Realisasi 2017-2026</div>
+          <div className="h-[150px]">
             <GaugeCard
               stats={stats}
               tahunAktif={tahunAktif}
@@ -63,17 +63,17 @@ function TimeSeriesContent({ stats, tahunAktif }: { stats?: PbbAggregateRow; tah
         </div>
 
         {/* Line Chart Placeholder */}
-        <div className="bg-gradient-to-r from-indigo-900/30 via-indigo-900/10 to-transparent rounded-xl p-4">
-          <div className="text-xs text-indigo-300 mb-2">Tren Realisasi Tahunan 2017-2026</div>
-          <div className="min-h-[200px] flex items-center justify-center">
-            <div className="bg-slate-800 rounded-xl p-4">
+        <div className="bg-gradient-to-r from-indigo-900/30 via-indigo-900/10 to-transparent rounded-xl p-3">
+          <div className="text-xs text-indigo-300 mb-1">Tren Realisasi Tahunan 2017-2026</div>
+          <div className="h-[150px] flex items-center justify-center">
+            <div className="bg-slate-800 rounded-xl p-3">
               <span className="text-slate-500">Line Chart Placeholder</span>
             </div>
           </div>
-          <div className="mt-2 text-xs text-indigo-300 text-center text-xs">
+          <div className="mt-1 text-xs text-indigo-300 text-center">
             Tahun Pajak: 2017 - 2026
           </div>
-          <div className="mt-1 text-xs text-slate-400 text-center">
+          <div className="mt-0.5 text-xs text-slate-400 text-center">
             * Grafik garis akan menampilkan tren tahunan saat data tersedia
           </div>
         </div>
