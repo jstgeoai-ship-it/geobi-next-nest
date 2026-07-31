@@ -3,7 +3,7 @@ import { QueryProvider } from '@/components/QueryProvider';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'GeoportalSmartTax',
+  title: 'GeoBI',
   description: 'Dashboard PBB-P2 Vol. 2 (GEO BI)',
 };
 

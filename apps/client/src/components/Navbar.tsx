@@ -67,7 +67,7 @@ export function Navbar() {
             {pembayaranOpen && (
               <div className="absolute left-0 top-full pt-2 z-50" style={{ minWidth: 260 }}>
                 <div className="bg-slate-900 rounded-xl shadow-2xl overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-                  <Link href={linkHref('/katalog')} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
+                  <Link href={linkHref('/katalog/pbb-p2')} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 transition-colors group">
                     <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center flex-shrink-0 group-hover:bg-orange-500/20 transition-colors">
                       <svg className="w-4 h-4 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
@@ -372,7 +372,9 @@ export function Navbar() {
         <div className="hidden md:flex items-center gap-3 shrink-0">
           {user ? (
             <>
-              <span className="text-xs text-slate-400 whitespace-nowrap">{user.name}</span>
+              <Link href="/profile" className="text-xs text-slate-400 hover:text-white transition-colors whitespace-nowrap">
+                {user.name}
+              </Link>
               <button onClick={handleLogout} className="text-xs px-3 py-2 rounded-lg text-red-400 hover:bg-red-400/10 transition-colors whitespace-nowrap">
                 Logout
               </button>
@@ -412,7 +414,7 @@ export function Navbar() {
           <div className="border-t border-white/10 pt-3 mt-1">
             {user ? (
               <>
-                <span className="block text-slate-400 mb-2">{user.name}</span>
+                <Link href="/profile" className="block text-slate-400 hover:text-white mb-2">{user.name}</Link>
                 <button onClick={handleLogout} className="text-red-400">Logout</button>
               </>
             ) : (

@@ -25,7 +25,6 @@ function njopOptions(hints: [string, string, string, string]) {
 }
 
 const BUTTONS: { id: PanelId; btnId: string; label: string; icon: string }[] = [
-  { id: 'panelLayer', btnId: 'btnPanelLayer', label: 'Layer Peta', icon: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
   { id: 'panelWaktu', btnId: 'btnPanelWaktu', label: 'Filter Waktu', icon: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>' },
   { id: 'panelWilayah', btnId: 'btnPanelWilayah', label: 'Filter Wilayah', icon: '<path d="M12 21s-7-5.686-7-11a7 7 0 1 1 14 0c0 5.314-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>' },
   { id: 'panelStatus', btnId: 'btnPanelStatus', label: 'Status Pembayaran', icon: '<path d="M20 6L9 17l-5-5"/>' },
@@ -33,6 +32,7 @@ const BUTTONS: { id: PanelId; btnId: string; label: string; icon: string }[] = [
   { id: 'panelNjop', btnId: 'btnPanelNjop', label: 'Kategori NJOP Total', icon: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5h5M9.5 12h5M12 9v6"/>' },
   { id: 'panelNjopBumi', btnId: 'btnPanelNjopBumi', label: 'Kategori NJOP Bumi', icon: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>' },
   { id: 'panelNjopBangunan', btnId: 'btnPanelNjopBangunan', label: 'Kategori NJOP Bangunan', icon: '<path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h2M9 13h2M9 17h2M13 9h2M13 13h2M13 17h2"/>' },
+  { id: 'panelLayer', btnId: 'btnPanelLayer', label: 'Layer Peta', icon: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
 ];
 
 export function FilterGrid({ waktuPanelVariant }: { waktuPanelVariant: 'segmented' | 'plain' }) {

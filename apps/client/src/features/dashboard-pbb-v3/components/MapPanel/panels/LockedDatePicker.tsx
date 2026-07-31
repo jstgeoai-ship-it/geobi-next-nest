@@ -70,7 +70,6 @@ export function LockedDatePicker({ value, onChange, min, max, ket, label, idPref
 
   function setNilai(iso: string) {
     onChange(iso);
-    setOpen(false);
   }
 
   useEffect(() => {

@@ -7,6 +7,7 @@ import { useParcelFilterSync } from '../../hooks/useParcelFilterSync';
 import { SearchBar } from './SearchBar';
 import { GeocoderSearchBar } from './GeocoderSearchBar';
 import { FilterGrid } from './FilterGrid';
+import { WilayahRealisasiPanel } from './WilayahRealisasiPanel';
 
 interface Props {
   showScaleControl: boolean;
@@ -41,6 +42,7 @@ export function MapPanel({ showScaleControl, showBasemapSwitcher, showStatChip, 
         <GeocoderSearchBar onSelect={(lng, lat) => flyToResult(lng, lat)} />
       )}
       <FilterGrid waktuPanelVariant={waktuPanelVariant} />
+      <WilayahRealisasiPanel />
 
       {showStatChip && <div id="stat-chip" ref={statChipRef}>Memuat…</div>}
 

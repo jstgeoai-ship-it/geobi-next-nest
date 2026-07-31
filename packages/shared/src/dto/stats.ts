@@ -34,3 +34,11 @@ export interface PbbAggregateRow {
   batal_rp: number;
   nol_rp: number;
 }
+
+/** One bar of the RT/RW realisasi breakdown chart — GET /pbb/stats/wilayah. */
+export interface WilayahRealisasiRow {
+  label: string;
+  realisasi_rp: number;
+  target_rp: number;
+  pct: number;
+}

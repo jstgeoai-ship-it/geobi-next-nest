@@ -28,7 +28,18 @@ export class PbbController {
 
   @Get('stats')
   async dashboardStats(@Query() query: Record<string, unknown>) {
-    const filter: StatsFilter = {
+    return this.stats.aggregate(this.buildFilterFromQuery(query));
+  }
+
+  /** Realisasi-vs-target per RT/RW — feeds the map's floating bar chart panel. */
+  @Get('stats/wilayah')
+  async statsWilayah(@Query() query: Record<string, unknown>) {
+    const groupBy = query.groupBy === 'rw' ? 'rw' : 'rt';
+    return this.stats.aggregateByWilayah(this.buildFilterFromQuery(query), groupBy);
+  }
+
+  private buildFilterFromQuery(query: Record<string, unknown>): StatsFilter {
+    return {
       kelurahan: query.kelurahan as string | undefined,
       rw: query.rw as string | undefined,
       rt: query.rt as string | undefined,
@@ -42,7 +53,6 @@ export class PbbController {
       periode_akhir: query.periode_akhir as string | undefined,
       periode_mode: query.periode_mode === 'longgar' ? 'longgar' : 'ketat',
     };
-    return this.stats.aggregate(filter);
   }
 
   @Get('wilayah/kelurahan')

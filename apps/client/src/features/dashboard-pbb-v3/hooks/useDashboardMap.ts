@@ -6,7 +6,8 @@ import type { Map as MaplibreMap, Marker, Popup } from 'maplibre-gl';
 import { BASEMAP_STYLES } from '../lib/basemap-styles';
 import { COLOR_EXPR } from '../lib/color-expr';
 import { AttrControl } from '../lib/maplibre-controls/AttrControl';
-import { MapToolsControl, TourHelpControl } from '../lib/maplibre-controls/MapToolsControl';
+import { MapToolsControl } from '../lib/maplibre-controls/MapToolsControl';
+import { MapNavControl } from '../lib/maplibre-controls/MapNavControl';
 import { kelurahanPopupHTML, persilPopupHTML } from '../lib/popup-html';
 import { useFiltersStore } from '../store/filters.store';
 
@@ -20,9 +21,6 @@ export function buildTanahTilesUrl(tahun: string) {
   const qs = tahun ? `?tahun=${encodeURIComponent(tahun)}` : '';
   return `/api/tiles/data-tanah-map/{z}/{x}/{y}${qs}`;
 }
-
-const LOC_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r="8"/><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/></svg>`;
-const HOME_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>`;
 
 interface Options {
   showScaleControl: boolean;
@@ -152,28 +150,15 @@ export function useDashboardMap(
     } else {
       map.addControl(new AttrControl(), 'bottom-right');
     }
-    map.addControl(new maplibregl.NavigationControl({ showCompass: true }), 'bottom-right');
-
-    const navGroup = map.getContainer().querySelector('.maplibregl-ctrl-bottom-right .maplibregl-ctrl-group');
-    if (navGroup) {
-      const homeBtn = document.createElement('button');
-      homeBtn.title = 'Home';
-      homeBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;color:inherit;';
-      homeBtn.innerHTML = HOME_ICON;
-      const zoomIn = navGroup.querySelector('.maplibregl-ctrl-zoom-in');
-      if (zoomIn) navGroup.insertBefore(homeBtn, zoomIn);
-      homeBtn.addEventListener('click', fitToDataBounds);
-
-      const locBtn = document.createElement('button');
-      locBtn.title = 'My Location';
-      locBtn.setAttribute('aria-label', 'My Location');
-      locBtn.style.cssText = 'display:flex;align-items:center;justify-content:center;color:inherit;';
-      locBtn.innerHTML = LOC_ICON;
-      navGroup.insertBefore(locBtn, homeBtn);
-      locBtn.addEventListener('click', () => locateMe(locBtn));
-    }
-
-    if (opts.showTour) map.addControl(new TourHelpControl(() => opts.onTourOpen()), 'bottom-right');
+    map.addControl(
+      new MapNavControl({
+        showTour: opts.showTour,
+        onHome: fitToDataBounds,
+        onLocate: (btn) => locateMe(btn),
+        onTour: () => opts.onTourOpen(),
+      }),
+      'bottom-right',
+    );
     if (opts.showScaleControl) map.addControl(new maplibregl.ScaleControl());
 
     function tampilkanLokasi(pos: GeolocationPosition, terbang: boolean) {
