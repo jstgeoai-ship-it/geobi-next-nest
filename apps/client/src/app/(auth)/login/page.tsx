@@ -38,7 +38,7 @@ function LoginForm() {
         return;
       }
       await queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
-      router.push(searchParams.get('redirect') || '/katalog/dashboard-pbb');
+      router.push(searchParams.get('redirect') || '/');
     } finally {
       setLoading(false);
     }

@@ -89,31 +89,3 @@ export class MapToolsControl implements IControl {
     return 'bottom-right' as const;
   }
 }
-
-/** Round "?" button that opens the guided tour — port of TourHelpControl. */
-export class TourHelpControl implements IControl {
-  private el?: HTMLButtonElement;
-
-  constructor(private onOpen: () => void) {}
-
-  onAdd(): HTMLElement {
-    this.el = document.createElement('button');
-    this.el.type = 'button';
-    this.el.className = 'maplibregl-ctrl tour-help-ctrl';
-    this.el.title = 'Panduan penggunaan dashboard';
-    this.el.textContent = '?';
-    this.el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      this.onOpen();
-    });
-    return this.el;
-  }
-
-  onRemove(): void {
-    this.el?.remove();
-  }
-
-  getDefaultPosition() {
-    return 'bottom-right' as const;
-  }
-}
