@@ -53,7 +53,7 @@ function TimeSeriesContent({ stats, tahunAktif }: { stats?: PbbAggregateRow; tah
       <div className="grid gap-4">
         {/* Gauge Chart */}
         <div className="bg-gradient-to-r from-blue-900/30 via-blue-900/10 to-transparent rounded-xl p-4">
-          <div className="text-xs text-blue-300 mb-2">Capaian Realisasi vs Target</div>
+          <div className="text-xs text-blue-300 mb-2">Capaian Realisasi 2017-2026</div>
           <div className="h-32">
             <GaugeCard
               stats={stats}
@@ -64,14 +64,17 @@ function TimeSeriesContent({ stats, tahunAktif }: { stats?: PbbAggregateRow; tah
 
         {/* Line Chart Placeholder */}
         <div className="bg-gradient-to-r from-indigo-900/30 via-indigo-900/10 to-transparent rounded-xl p-4">
-          <div className="text-xs text-indigo-300 mb-2">Tren Realisasi Tahunan</div>
+          <div className="text-xs text-indigo-300 mb-2">Tren Realisasi Tahunan 2017-2026</div>
           <div className="h-32">
             <div className="bg-slate-800 rounded-xl flex items-center justify-center">
               <span className="text-slate-500">Line Chart Placeholder</span>
             </div>
           </div>
-          <div className="mt-2 text-xs text-indigo-300 text-center">
+          <div className="mt-2 text-xs text-indigo-300 text-center text-xs">
             Tahun Pajak: 2017 - 2026
+          </div>
+          <div className="mt-1 text-xs text-slate-400 text-center">
+            * Grafik garis akan menampilkan tren tahunan saat data tersedia
           </div>
         </div>
       </div>
