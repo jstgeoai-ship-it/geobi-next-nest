@@ -30,12 +30,12 @@
 
 /* Overlays the map instead of sitting in the flex flow — expanding/collapsing it must never
    resize #main (that would resize the MapLibre canvas and visibly shift/reflow the map face). */
+
 #sidebar {
   position: absolute; top: 0; left: 0; height: 100%; z-index: 20;
-  width: clamp(300px, 25vw, 440px);
+  width: clamp(300px, 37.5vw, 500px); flex-shrink: 0;
   background: rgba(6, 12, 30, 0.95);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 4px 0 20px rgba(0, 0, 0, .35);
   display: flex; flex-direction: column;
   overflow-y: auto; overflow-x: hidden;
   transition: width .28s cubic-bezier(.4, 0, .2, 1);
