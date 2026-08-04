@@ -26,11 +26,11 @@ const STATS = [
 
 export default function TentangPage() {
   return (
-    <div style={{ background: '#0a0f1e', color: '#e2e8f0', fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+    <div style={{ background: 'var(--pub-bg)', color: 'var(--pub-text)', fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       <section style={{ position: 'relative', overflow: 'hidden', padding: '120px 0 80px' }}>
         <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 32px', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#475569', marginBottom: 40 }}>
-            <Link href="/" style={{ color: '#475569', textDecoration: 'none' }}>Beranda</Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--pub-muted-3)', marginBottom: 40 }}>
+            <Link href="/" style={{ color: 'var(--pub-muted-3)', textDecoration: 'none' }}>Beranda</Link>
             <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
@@ -46,7 +46,7 @@ export default function TentangPage() {
             Geoportal <span style={{ color: '#22d3ee' }}>Jakarta SmartTax</span>
           </h1>
 
-          <p style={{ fontSize: 17, lineHeight: 1.8, color: '#94a3b8', maxWidth: 680 }}>
+          <p style={{ fontSize: 17, lineHeight: 1.8, color: 'var(--pub-muted)', maxWidth: 680 }}>
             Geoportal Jakarta SmartTax merupakan portal informasi geospasial perpajakan daerah yang
             dikelola oleh Bapenda Provinsi DKI Jakarta. Portal ini menyediakan visualisasi data pajak
             daerah berbasis spasial yang terintegrasi untuk mendukung monitoring, analisis, dan
@@ -60,9 +60,9 @@ export default function TentangPage() {
         <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 32px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
             {STATS.map((s) => (
-              <div key={s.label} style={{ background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: '28px 24px', textAlign: 'center' }}>
+              <div key={s.label} style={{ background: 'var(--pub-card)', border: '1px solid var(--pub-border)', borderRadius: 16, padding: '28px 24px', textAlign: 'center' }}>
                 <div style={{ fontSize: '2rem', fontWeight: 800, color: s.color, marginBottom: 6 }}>{s.value}</div>
-                <div style={{ fontSize: 12, color: '#64748b', textTransform: 'uppercase', letterSpacing: '.06em' }}>{s.label}</div>
+                <div style={{ fontSize: 12, color: 'var(--pub-muted-2)', textTransform: 'uppercase', letterSpacing: '.06em' }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -77,7 +77,7 @@ export default function TentangPage() {
               <span style={{ fontSize: 11, fontWeight: 700, color: '#f97316', letterSpacing: '.12em', textTransform: 'uppercase' }}>Regulasi</span>
             </div>
             <h2 style={{ fontSize: 'clamp(1.6rem,3vw,2.2rem)', fontWeight: 800, letterSpacing: '-.02em', marginBottom: 10 }}>Landasan Hukum</h2>
-            <p style={{ fontSize: 14, color: '#64748b', lineHeight: 1.7, maxWidth: 560 }}>
+            <p style={{ fontSize: 14, color: 'var(--pub-muted-2)', lineHeight: 1.7, maxWidth: 560 }}>
               Peraturan perundang-undangan dan ketetapan resmi yang melandasi pelaksanaan
               program penataan data geospasial pajak daerah.
             </p>
@@ -85,11 +85,11 @@ export default function TentangPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {LAW_ITEMS.map((item, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, background: 'rgba(15,23,42,0.6)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: '16px 18px' }}>
+              <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 14, background: 'var(--pub-card)', border: '1px solid var(--pub-border)', borderRadius: 12, padding: '16px 18px' }}>
                 <div style={{ width: 28, height: 28, minWidth: 28, borderRadius: '50%', background: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.2)', color: '#22d3ee', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
                   {i + 1}
                 </div>
-                <p style={{ fontSize: 13, color: '#94a3b8', lineHeight: 1.65, margin: 0 }}>{item}</p>
+                <p style={{ fontSize: 13, color: 'var(--pub-muted)', lineHeight: 1.65, margin: 0 }}>{item}</p>
               </div>
             ))}
           </div>

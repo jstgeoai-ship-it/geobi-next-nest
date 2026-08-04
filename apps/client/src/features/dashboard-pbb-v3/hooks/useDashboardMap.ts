@@ -63,6 +63,14 @@ export function useDashboardMap(
       .catch(() => {});
   }, []);
 
+  /** Zooms to an arbitrary [[west,south],[east,north]] box — used by the bar chart panel to
+   *  fly to whichever RT/RW's bar was clicked. */
+  const flyToBounds = useCallback((bounds: [[number, number], [number, number]]) => {
+    const map = mapRef.current;
+    if (!map) return;
+    map.fitBounds(bounds, { padding: 60, maxZoom: 18, duration: 900 });
+  }, []);
+
   const flyToResult = useCallback((lng: number, lat: number, row?: Record<string, unknown>) => {
     const map = mapRef.current;
     if (!map || isNaN(lng) || isNaN(lat)) return;
@@ -323,7 +331,7 @@ export function useDashboardMap(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { mapRef, mapLoaded, flyToResult, fitToDataBounds };
+  return { mapRef, mapLoaded, flyToResult, fitToDataBounds, flyToBounds };
 }
 
 /** Port of applyFilters()'s MapLibre-expression half in dashboard.blade.php. */

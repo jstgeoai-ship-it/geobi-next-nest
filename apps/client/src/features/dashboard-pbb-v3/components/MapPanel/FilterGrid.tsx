@@ -12,6 +12,11 @@ import { StatusPanel } from './panels/StatusPanel';
 import { WilayahPanel } from './panels/WilayahPanel';
 import { WaktuPanel } from './panels/WaktuPanel';
 import { LayerPanel } from './panels/LayerPanel';
+import type { SidebarTab } from '../Sidebar/Sidebar';
+
+/** Tab Time Series only ever needs to scope by when/where — the rest (status, kategori,
+ *  NJOP) is Pembayaran-specific filtering logic. */
+const TIMESERIES_PANEL_IDS: PanelId[] = ['panelWaktu', 'panelWilayah', 'panelLayer'];
 
 const KATEGORI_PBB_LABELS: Record<string, { label: string; hint: string }> = {
   tinggi: { label: 'Tinggi', hint: '> Rp 15.485.100' },
@@ -35,11 +40,15 @@ const BUTTONS: { id: PanelId; btnId: string; label: string; icon: string }[] = [
   { id: 'panelLayer', btnId: 'btnPanelLayer', label: 'Layer Peta', icon: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
 ];
 
-export function FilterGrid({ waktuPanelVariant }: { waktuPanelVariant: 'segmented' | 'plain' }) {
+export function FilterGrid({ waktuPanelVariant, sidebarTab }: { waktuPanelVariant: 'segmented' | 'plain'; sidebarTab: SidebarTab }) {
   const openPanel = useFiltersStore((s) => s.openPanel);
   const togglePanel = useFiltersStore((s) => s.togglePanel);
   const closeAllPanels = useFiltersStore((s) => s.closeAllPanels);
   const rootRef = useRef<HTMLDivElement>(null);
+  // All buttons stay mounted (never filtered out of the DOM) so hiding/showing them for the
+  // active tab can transition smoothly via CSS — removing them outright would make the strip
+  // snap to its new size instantly instead of animating.
+  const isVisibleForTab = (id: PanelId) => sidebarTab !== 'timeseries' || TIMESERIES_PANEL_IDS.includes(id);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -104,13 +113,14 @@ export function FilterGrid({ waktuPanelVariant }: { waktuPanelVariant: 'segmente
     <div id="panel-float" ref={rootRef}>
       <div className="panel-grid">
         {BUTTONS.map((b) => (
-          <div key={b.id} className="panel-btn-wrap">
+          <div key={b.id} className={`panel-btn-wrap${isVisibleForTab(b.id) ? '' : ' panel-btn-hidden'}`}>
             <button
               id={b.btnId}
               className={`panel-icon-btn${openPanel === b.id ? ' active' : ''}`}
               type="button"
               data-label={b.label}
               aria-label={b.label}
+              tabIndex={isVisibleForTab(b.id) ? 0 : -1}
               onClick={() => togglePanel(b.id)}
             >
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: b.icon }} />

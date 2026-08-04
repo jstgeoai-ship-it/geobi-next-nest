@@ -32,10 +32,10 @@ function Badge({ children, color }: { children: React.ReactNode; color?: 'orange
 
 export default function StrukturPage() {
   return (
-    <div style={{ background: '#0a0f1e', color: '#e2e8f0', fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+    <div style={{ background: 'var(--pub-bg)', color: 'var(--pub-text)', fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '100px 32px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#475569', marginBottom: 24 }}>
-          <Link href="/" style={{ color: '#475569', textDecoration: 'none' }}>Beranda</Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--pub-muted-3)', marginBottom: 24 }}>
+          <Link href="/" style={{ color: 'var(--pub-muted-3)', textDecoration: 'none' }}>Beranda</Link>
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
           <span style={{ color: '#f97316', fontWeight: 500 }}>Struktur Organisasi</span>
         </div>
@@ -43,7 +43,7 @@ export default function StrukturPage() {
         <h1 style={{ fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontWeight: 800, marginBottom: 4 }}>
           Struktur Organisasi <span style={{ color: '#22d3ee' }}>Jakarta SmartTax</span>
         </h1>
-        <p style={{ fontSize: 14, color: '#475569', marginBottom: 32 }}>Bapenda DKI Jakarta</p>
+        <p style={{ fontSize: 14, color: 'var(--pub-muted-3)', marginBottom: 32 }}>Bapenda DKI Jakarta</p>
       </div>
 
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 32px 80px' }}>
@@ -123,11 +123,11 @@ export default function StrukturPage() {
                   <Avatar size={72} height={86} fontSize="1.3rem" />
                   <div style={{ fontSize: 11, color: '#22d3ee', fontWeight: 600, marginTop: 6 }}>{upt.name}</div>
                   <Badge color="orange">Project Manager</Badge>
-                  <div style={{ fontSize: 10, color: '#475569', textAlign: 'center', marginTop: 4, maxWidth: 110, lineHeight: 1.3 }}>{upt.unit}</div>
+                  <div style={{ fontSize: 10, color: 'var(--pub-muted-3)', textAlign: 'center', marginTop: 4, maxWidth: 110, lineHeight: 1.3 }}>{upt.unit}</div>
 
                   <div style={{ width: 2, height: 16, background: 'rgba(34,211,238,0.3)' }} />
                   <div style={{ width: '100%', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: 6, textAlign: 'center' }}>
-                    <span style={{ fontSize: 9, fontWeight: 600, color: '#475569', textTransform: 'uppercase', letterSpacing: '.05em' }}>Co-Project Manager</span>
+                    <span style={{ fontSize: 9, fontWeight: 600, color: 'var(--pub-muted-3)', textTransform: 'uppercase', letterSpacing: '.05em' }}>Co-Project Manager</span>
                   </div>
                 </div>
               ))}
