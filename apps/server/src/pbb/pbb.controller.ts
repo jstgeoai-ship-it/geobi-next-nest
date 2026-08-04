@@ -31,11 +31,16 @@ export class PbbController {
     return this.stats.aggregate(this.buildFilterFromQuery(query));
   }
 
-  /** Realisasi-vs-target per RT/RW — feeds the map's floating bar chart panel. */
+  /** Sudah/Belum Bayar breakdown per RT/RW — feeds the map's floating bar chart panel.
+   *  Independent of the main Filter Waktu; takes its own tahunAwal/tahunAkhir range. */
   @Get('stats/wilayah')
   async statsWilayah(@Query() query: Record<string, unknown>) {
     const groupBy = query.groupBy === 'rw' ? 'rw' : 'rt';
-    return this.stats.aggregateByWilayah(this.buildFilterFromQuery(query), groupBy);
+    return this.stats.aggregateByWilayah(
+      groupBy,
+      query.tahunAwal as string | undefined,
+      query.tahunAkhir as string | undefined,
+    );
   }
 
   private buildFilterFromQuery(query: Record<string, unknown>): StatsFilter {
@@ -68,6 +73,12 @@ export class PbbController {
   @Get('wilayah/rt')
   rtOptions(@Query('kelurahan') kelurahan?: string, @Query('rw') rw?: string) {
     return this.wilayah.rtOptions(kelurahan, rw);
+  }
+
+  /** Bounding box for one RT/RW — feeds the bar chart's click-to-zoom-on-map. */
+  @Get('wilayah/bounds')
+  wilayahBounds(@Query('groupBy') groupBy: string, @Query('value') value: string) {
+    return this.wilayah.bounds(groupBy === 'rw' ? 'rw' : 'rt', value);
   }
 
   @Get('search')

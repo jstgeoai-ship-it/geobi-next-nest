@@ -5,7 +5,7 @@ import './lib/chart-setup';
 import './dashboard.css';
 import { Navbar } from '@/components/Navbar';
 import { CONFIG as config } from './config';
-import { Sidebar } from './components/Sidebar/Sidebar';
+import { Sidebar, type SidebarTab } from './components/Sidebar/Sidebar';
 import { MapPanel } from './components/MapPanel/MapPanel';
 import { TourOverlay } from './components/TourOverlay';
 import { useDashboardStats } from './hooks/useDashboardStats';
@@ -21,6 +21,9 @@ export function DashboardPbbV3() {
   const tour = useTour();
   // Always starts open on a fresh page load — collapse state is transient UI, not persisted.
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  // Lifted out of Sidebar so FilterGrid can also react to it (Time Series only shows
+  // Waktu/Wilayah/Layer Peta; the rest of the filter strip is Pembayaran-only).
+  const [sidebarTab, setSidebarTab] = useState<SidebarTab>('pembayaran');
 
   // Matched to v2: seeds tahun = tahunTerbaru() by default (config.defaultTahunFilter).
   useEffect(() => {
@@ -42,6 +45,8 @@ export function DashboardPbbV3() {
           error={error ? String(error) : null}
           collapsed={sidebarCollapsed}
           onToggleCollapsed={() => setSidebarCollapsed((c) => !c)}
+          tab={sidebarTab}
+          onTabChange={setSidebarTab}
         />
         <MapPanel
           showScaleControl={config.showScaleControl}
@@ -51,6 +56,7 @@ export function DashboardPbbV3() {
           searchMode={config.searchMode}
           waktuPanelVariant={config.waktuPanelVariant}
           onTourOpen={tour.open}
+          sidebarTab={sidebarTab}
         />
       </div>
       {config.showTour && <TourOverlay tour={tour} />}

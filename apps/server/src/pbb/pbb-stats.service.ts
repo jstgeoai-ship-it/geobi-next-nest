@@ -71,29 +71,45 @@ export class PbbStatsService {
     return rows.map((r) => r.tahun_pajak);
   }
 
-  /** Realisasi-vs-target breakdown per RT or RW — feeds the map's floating bar chart panel.
-   *  groupBy must come from WILAYAH_GROUP_COLUMNS, never straight from the request. */
-  async aggregateByWilayah(filter: StatsFilter, groupBy: 'rt' | 'rw'): Promise<WilayahRealisasiRow[]> {
+  /** Sudah/Belum Bayar rupiah + SPPT-count breakdown per RT or RW — feeds the map's floating
+   *  stacked bar chart panel. Deliberately independent from the main Filter Waktu (single
+   *  tahun + periode pembayaran, see StatsFilter) — this panel has its own Tahun Pajak
+   *  Awal/Akhir range, unrelated to the tab Pembayaran filter. groupBy must come from
+   *  WILAYAH_GROUP_COLUMNS, never straight from the request. */
+  async aggregateByWilayah(
+    groupBy: 'rt' | 'rw',
+    tahunAwal?: string | number,
+    tahunAkhir?: string | number,
+  ): Promise<WilayahRealisasiRow[]> {
     const column = WILAYAH_GROUP_COLUMNS[groupBy];
-    const { sql: whereSql, params } = buildWhereClause(filter);
+    const clauses = [`${column} IS NOT NULL`, `${column} <> ''`];
+    const params: unknown[] = [];
+    if (tahunAwal) { params.push(tahunAwal); clauses.push(`tahun_pajak >= $${params.length}`); }
+    if (tahunAkhir) { params.push(tahunAkhir); clauses.push(`tahun_pajak <= $${params.length}`); }
 
     const sql = `
       SELECT
         ${column} AS label,
-        COALESCE(SUM(pbb_telah_bayar), 0) AS realisasi_rp,
-        COALESCE(SUM(pbb_telah_bayar), 0) + COALESCE(SUM(pbb_belum_bayar), 0) AS target_rp
+        COALESCE(SUM(pbb_telah_bayar), 0) AS sudah_bayar_rp,
+        COALESCE(SUM(pbb_belum_bayar), 0) AS belum_bayar_rp,
+        SUM(CASE WHEN status_pem = '${STATUS_PEM.SUDAH_BAYAR}' THEN 1 ELSE 0 END)::int AS sudah_bayar_count,
+        SUM(CASE WHEN status_pem = '${STATUS_PEM.BELUM_BAYAR}' THEN 1 ELSE 0 END)::int AS belum_bayar_count
       FROM ${T_ATRIBUT}
-      ${whereSql}
-      ${whereSql ? 'AND' : 'WHERE'} ${column} IS NOT NULL AND ${column} <> ''
+      WHERE ${clauses.join(' AND ')}
       GROUP BY ${column}
       ORDER BY ${column}
     `;
 
-    const rows = await this.db.query<{ label: string; realisasi_rp: string; target_rp: string }>(sql, params);
-    return rows.map((r) => {
-      const realisasi = Number(r.realisasi_rp);
-      const target = Number(r.target_rp);
-      return { label: r.label, realisasi_rp: realisasi, target_rp: target, pct: target > 0 ? Math.round((realisasi / target) * 1000) / 10 : 0 };
-    });
+    const rows = await this.db.query<{
+      label: string; sudah_bayar_rp: string; belum_bayar_rp: string;
+      sudah_bayar_count: number; belum_bayar_count: number;
+    }>(sql, params);
+    return rows.map((r) => ({
+      label: r.label,
+      sudahBayarRp: Number(r.sudah_bayar_rp),
+      belumBayarRp: Number(r.belum_bayar_rp),
+      sudahBayarCount: r.sudah_bayar_count,
+      belumBayarCount: r.belum_bayar_count,
+    }));
   }
 }

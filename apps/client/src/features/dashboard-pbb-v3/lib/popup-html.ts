@@ -20,7 +20,7 @@ export function persilPopupHTML(p: Record<string, any>): string {
     </div>
     <div class="pop-body" style="max-height:320px; overflow-y:auto;">
       <div class="pop-row"><span class="pop-k">Nama Wajib Pajak</span><span class="pop-v">${teks(p.nama_wajib_pajak)}</span></div>
-      <div class="pop-row"><span class="pop-k">ID Objek Pajak</span><span class="pop-v">${teks(p.idobjekpaj)}</span></div>
+      <div class="pop-row"><span class="pop-k">NOP</span><span class="pop-v">${teks(p.idobjekpaj)}</span></div>
       <div class="pop-row"><span class="pop-k">PBB Harus Bayar</span><span class="pop-v">${rp2(p.pbb_yang_dibayar)}</span></div>
       <div class="pop-row"><span class="pop-k">PBB Terutang</span><span class="pop-v">${rp2(p.pbb_terutang)}</span></div>
       <div class="pop-row"><span class="pop-k">NJOP Total</span><span class="pop-v">${rp2(p.njop_total)}</span></div>

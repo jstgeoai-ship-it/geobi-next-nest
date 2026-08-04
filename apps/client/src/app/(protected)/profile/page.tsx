@@ -7,12 +7,15 @@ import { useAuthUser } from '@/lib/useAuthUser';
 import { Navbar } from '@/components/Navbar';
 
 const inputClass =
-  'mt-1 block w-full rounded-md bg-slate-800 border border-white/10 text-white placeholder-slate-500 px-3 py-2 text-sm outline-none focus:border-cyan-400 transition-colors';
-const labelClass = 'block text-sm font-medium text-slate-300';
+  'mt-1 block w-full rounded-md bg-slate-800 light:bg-slate-50 border border-white/10 light:border-gray-300 text-white light:text-gray-900 placeholder-slate-500 px-3 py-2 text-sm outline-none focus:border-cyan-400 transition-colors';
+const labelClass = 'block text-sm font-medium text-slate-300 light:text-gray-700';
+const headingClass = 'text-lg font-medium text-white light:text-gray-900';
+const descClass = 'mt-1 text-sm text-slate-400 light:text-gray-600';
+const savedClass = 'text-sm text-slate-400 light:text-gray-500';
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
-    <div className="p-4 sm:p-8 bg-slate-900 border border-white/10 shadow-lg sm:rounded-xl">
+    <div className="p-4 sm:p-8 bg-slate-900 light:bg-slate-50 border border-white/10 light:border-gray-200 shadow-lg sm:rounded-xl">
       <div className="max-w-xl">{children}</div>
     </div>
   );
@@ -55,8 +58,8 @@ function ProfileInformationForm() {
   return (
     <section>
       <header>
-        <h2 className="text-lg font-medium text-white">Profile Information</h2>
-        <p className="mt-1 text-sm text-slate-400">Update your account&apos;s profile information and email address.</p>
+        <h2 className={headingClass}>Profile Information</h2>
+        <p className={descClass}>Update your account&apos;s profile information and email address.</p>
       </header>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-6">
@@ -71,7 +74,7 @@ function ProfileInformationForm() {
         {error && <p className="text-sm text-red-400">{error}</p>}
         <div className="flex items-center gap-4">
           <button type="submit" className="bg-orange-500 hover:bg-orange-600 transition-colors text-white px-4 py-2 rounded-md text-sm font-semibold">Save</button>
-          {saved && <p className="text-sm text-slate-400">Saved.</p>}
+          {saved && <p className={savedClass}>Saved.</p>}
         </div>
       </form>
     </section>
@@ -113,8 +116,8 @@ function UpdatePasswordForm() {
   return (
     <section>
       <header>
-        <h2 className="text-lg font-medium text-white">Update Password</h2>
-        <p className="mt-1 text-sm text-slate-400">Ensure your account is using a long, random password to stay secure.</p>
+        <h2 className={headingClass}>Update Password</h2>
+        <p className={descClass}>Ensure your account is using a long, random password to stay secure.</p>
       </header>
 
       <form onSubmit={handleSubmit} className="mt-6 space-y-6">
@@ -133,7 +136,7 @@ function UpdatePasswordForm() {
         {error && <p className="text-sm text-red-400">{error}</p>}
         <div className="flex items-center gap-4">
           <button type="submit" className="bg-orange-500 hover:bg-orange-600 transition-colors text-white px-4 py-2 rounded-md text-sm font-semibold">Save</button>
-          {saved && <p className="text-sm text-slate-400">Saved.</p>}
+          {saved && <p className={savedClass}>Saved.</p>}
         </div>
       </form>
     </section>
@@ -166,8 +169,8 @@ function DeleteUserForm() {
   return (
     <section className="space-y-6">
       <header>
-        <h2 className="text-lg font-medium text-white">Delete Account</h2>
-        <p className="mt-1 text-sm text-slate-400">
+        <h2 className={headingClass}>Delete Account</h2>
+        <p className={descClass}>
           Once your account is deleted, all of its resources and data will be permanently deleted.
           Before deleting your account, please download any data or information that you wish to retain.
         </p>
@@ -179,7 +182,7 @@ function DeleteUserForm() {
         </button>
       ) : (
         <form onSubmit={handleDelete} className="border border-red-500/30 rounded-md p-4 space-y-4 bg-red-500/5">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-400 light:text-gray-600">
             Please enter your password to confirm you would like to permanently delete your account.
           </p>
           <input
@@ -191,7 +194,7 @@ function DeleteUserForm() {
           />
           {error && <p className="text-sm text-red-400">{error}</p>}
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={() => { setConfirming(false); setPassword(''); setError(null); }} className="text-sm text-slate-400 hover:text-white transition-colors">
+            <button type="button" onClick={() => { setConfirming(false); setPassword(''); setError(null); }} className="text-sm text-slate-400 light:text-gray-500 hover:text-white light:hover:text-gray-900 transition-colors">
               Cancel
             </button>
             <button type="submit" className="bg-red-600 hover:bg-red-700 transition-colors text-white px-4 py-2 rounded-md text-sm font-semibold">
@@ -206,9 +209,9 @@ function DeleteUserForm() {
 
 export default function ProfilePage() {
   return (
-    <div className="min-h-screen bg-black pt-16">
+    <div className="min-h-screen bg-black light:bg-slate-100 pt-16">
       <Navbar />
-      <header className="bg-slate-900 border-b border-white/10">
+      <header className="bg-slate-900 light:bg-slate-50 border-b border-white/10 light:border-gray-200">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <h2 className="font-semibold text-xl text-cyan-400 leading-tight">Profile</h2>
         </div>

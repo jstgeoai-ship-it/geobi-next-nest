@@ -35,10 +35,20 @@ export interface PbbAggregateRow {
   nol_rp: number;
 }
 
-/** One bar of the RT/RW realisasi breakdown chart — GET /pbb/stats/wilayah. */
+/** One stacked bar of the RT/RW realisasi breakdown chart — GET /pbb/stats/wilayah. */
 export interface WilayahRealisasiRow {
   label: string;
-  realisasi_rp: number;
-  target_rp: number;
-  pct: number;
+  sudahBayarRp: number;
+  belumBayarRp: number;
+  sudahBayarCount: number;
+  belumBayarCount: number;
+}
+
+/** Bounding box of a wilayah's parcels — GET /pbb/wilayah/bounds, feeds the bar chart's
+ *  click-to-zoom (fitBounds needs [[west,south],[east,north]]). */
+export interface WilayahBoundsRow {
+  minLng: number;
+  minLat: number;
+  maxLng: number;
+  maxLat: number;
 }
