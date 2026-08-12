@@ -8,6 +8,7 @@ import { useTahunList } from '../../hooks/useWilayahOptions';
 import { useAvoidMapControls } from '../../hooks/useAvoidMapControls';
 import { useFiltersStore } from '../../store/filters.store';
 import { rupiah, angka, pctOf } from '../../lib/format';
+import { DownloadIcon } from '../Sidebar/icons';
 
 type GroupBy = 'rt' | 'rw';
 
@@ -72,6 +73,21 @@ export function WilayahRealisasiPanel({ onZoomToWilayah }: Props) {
     }
     document.addEventListener('pointermove', onMove);
     document.addEventListener('pointerup', onUp);
+  }
+
+  // Ekspor data chart yang lagi ditampilkan (per RT/RW, tahun terpilih) ke CSV — murni
+  // client-side dari `rows` yang udah di-fetch, gak perlu endpoint backend baru.
+  function handleDownloadCsv() {
+    const header = ['Wilayah', 'Sudah Bayar (Rp)', 'Sudah Bayar (SPPT)', 'Belum Bayar (Rp)', 'Belum Bayar (SPPT)'];
+    const csvRows = rows.map((r) => [r.label, r.sudahBayarRp, r.sudahBayarCount, r.belumBayarRp, r.belumBayarCount]);
+    const csv = [header, ...csvRows].map((row) => row.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `realisasi-pembayaran-${tab}-${tahunAwal}-${tahunAkhir}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   const chartData = {
@@ -188,6 +204,10 @@ export function WilayahRealisasiPanel({ onZoomToWilayah }: Props) {
             <select value={tahunAkhir} onChange={(e) => setTahunAkhir(e.target.value)}>
               {daftarTahun.map((th) => <option key={th} value={th}>{th}</option>)}
             </select>
+            <button type="button" className="wilayah-chart-download-btn" onClick={handleDownloadCsv} title="Unduh data sebagai CSV">
+              <DownloadIcon />
+              Unduh
+            </button>
           </div>
         )}
 

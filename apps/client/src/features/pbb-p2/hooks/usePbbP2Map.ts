@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
 import type { IControl, Map as MaplibreMap, Marker } from 'maplibre-gl';
 import { kelurahanPopupHTML, parselPopupHTML } from '../lib/popup-html';
+import { useTheme } from '@/lib/useTheme';
 
 const MARTIN = process.env.NEXT_PUBLIC_MARTIN_URL || 'http://localhost:3000';
 const TABLE = 'data_tanah';
@@ -26,6 +27,7 @@ const ATTR_TEXTS: Record<string, string> = {
   dark: '© CARTO © OpenStreetMap',
   osm: '© OpenStreetMap contributors',
   satellite: '© Google',
+  positron: '© CARTO © OpenStreetMap',
 };
 
 /** Attribution toggle whose text swaps per active basemap — port of pbbp2.blade.php's AttrControl. */
@@ -58,8 +60,8 @@ class AttrControl implements IControl {
   }
 }
 
-type BasemapKey = 'dark' | 'osm' | 'satellite';
-const BM_MAP: Record<BasemapKey, string> = { dark: 'bm-dark', osm: 'bm-osm', satellite: 'bm-sat' };
+type BasemapKey = 'dark' | 'osm' | 'satellite' | 'positron';
+const BM_MAP: Record<BasemapKey, string> = { dark: 'bm-dark', osm: 'bm-osm', satellite: 'bm-sat', positron: 'bm-positron' };
 
 export function usePbbP2Map(
   containerRef: React.RefObject<HTMLDivElement | null>,
@@ -69,15 +71,25 @@ export function usePbbP2Map(
   const mapRef = useRef<MaplibreMap | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
   const searchMarkerRef = useRef<Marker | null>(null);
+  const searchPopupRef = useRef<maplibregl.Popup | null>(null);
   const initialBoundsRef = useRef<[[number, number], [number, number]] | null>(null);
   const attrCtrlRef = useRef<AttrControl | null>(null);
+  const { theme } = useTheme();
 
-  const flyToResult = useCallback((lng: number, lat: number) => {
+  const flyToResult = useCallback((lng: number, lat: number, row?: Record<string, unknown>) => {
     const map = mapRef.current;
     if (!map || isNaN(lng) || isNaN(lat)) return;
     map.flyTo({ center: [lng, lat], zoom: 17, duration: 900 });
     searchMarkerRef.current?.remove();
     searchMarkerRef.current = new maplibregl.Marker({ color: '#22d3ee' }).setLngLat([lng, lat]).addTo(map);
+    searchPopupRef.current?.remove();
+    searchPopupRef.current = null;
+   if (row) {
+      searchPopupRef.current = new maplibregl.Popup({ offset: 6, maxWidth: '340px' })
+        .setLngLat([lng, lat])
+        .setHTML(parselPopupHTML(row))
+        .addTo(map);
+    }
   }, []);
 
   const setBasemap = useCallback((key: BasemapKey) => {
@@ -110,11 +122,14 @@ export function usePbbP2Map(
           'bm-dark': { type: 'raster', tileSize: 256, tiles: ['https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'], attribution: '© CARTO © OpenStreetMap' },
           'bm-osm': { type: 'raster', tileSize: 256, tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], attribution: '© OpenStreetMap contributors' },
           'bm-sat': { type: 'raster', tileSize: 256, tiles: ['https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}'], attribution: '© Google' },
+          'bm-positron': { type: 'raster', tileSize: 256, tiles: ['https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'], attribution: '© CARTO © OpenStreetMap' },
         },
         layers: [
-          { id: 'bm-dark', type: 'raster', source: 'bm-dark' },
-          { id: 'bm-osm', type: 'raster', source: 'bm-osm', layout: { visibility: 'none' } },
+          // Initial basemap follows the current dark/light theme; positron stays a manual pick, satellite always starts hidden.
+          { id: 'bm-dark', type: 'raster', source: 'bm-dark', layout: { visibility: theme === 'light' ? 'none' : 'visible' } },
+          { id: 'bm-osm', type: 'raster', source: 'bm-osm', layout: { visibility: theme === 'light' ? 'visible' : 'none' } },
           { id: 'bm-sat', type: 'raster', source: 'bm-sat', layout: { visibility: 'none' } },
+          { id: 'bm-positron', type: 'raster', source: 'bm-positron', layout: { visibility: 'none' } },
         ],
       },
     });
@@ -314,5 +329,20 @@ export function usePbbP2Map(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { mapRef, mapLoaded, flyToResult, setBasemap, setLayerVisible };
+  // Auto-switch the basemap when dark/light mode changes: light mode -> OSM, dark mode -> Dark.
+  // Runs after mount too (once useTheme resolves the stored preference), which is fine since it
+  // just re-applies whichever basemap already matches. A manual pick of "positron" or "satellite"
+  // gets overridden the next time the person flips dark/light mode — same behavior as the other
+  // GeoBI dashboards.
+  useEffect(() => {
+    if (!mapRef.current) return;
+    const basemapKey: BasemapKey = theme === 'light' ? 'osm' : 'dark';
+    const map = mapRef.current;
+    if (map.isStyleLoaded()) {
+      setBasemap(basemapKey);
+    } else {
+      map.once('load', () => setBasemap(basemapKey));
+    }
+   }, [theme, setBasemap]);
+  return { mapRef, mapLoaded, flyToResult, setBasemap, setLayerVisible, basemapFromTheme: theme === 'light' ? 'osm' : 'dark' };
 }

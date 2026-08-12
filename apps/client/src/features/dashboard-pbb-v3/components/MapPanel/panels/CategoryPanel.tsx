@@ -29,14 +29,14 @@ export function CategoryPanel({ title, options, selected, onToggle, onSetAll }: 
           onChange={(e) => onSetAll(e.target.checked)}
           title="Pilih / lepas semua kategori"
         />
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '.09em' }}>{title}</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-strong)', textTransform: 'uppercase', letterSpacing: '.09em' }}>{title}</span>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
         {options.map((opt) => (
-          <label key={opt.value} style={{ fontSize: 11, color: '#fff', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <label key={opt.value} style={{ fontSize: 11, color: 'var(--text-body)', display: 'flex', alignItems: 'center', gap: 10 }}>
             <input type="checkbox" checked={selected.includes(opt.value)} onChange={() => onToggle(opt.value)} />
             <span style={{ minWidth: 80, lineHeight: 1.3 }}>{opt.label}</span>
-            <span style={{ color: '#ffffff', fontSize: 10 }}>{opt.hint}</span>
+            <span style={{ color: 'var(--text-muted)', fontSize: 10 }}>{opt.hint}</span>
           </label>
         ))}
       </div>

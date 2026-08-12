@@ -76,17 +76,46 @@
   --tour-hole-dim: rgba(2, 6, 23, .78);
 
   --status-purple: #7c3aed;
+
+  /* Status semantik (Realisasi/Target/Belum Rea/Total) — sengaja SAMA di dark & light supaya
+     makna warna tetap konsisten (hijau=lunas, biru=target, amber=belum, ungu=total), yang
+     berubah antar tema cuma bg/border-nya (lebih pekat di dark, lebih pastel-tapi-tegas di light). */
+  --status-green-fg: #4ade80;
+  --status-green-strong: #22c55e;
+  --status-green-bg: rgba(34, 197, 94, .14);
+  --status-green-border: rgba(34, 197, 94, .38);
+
+  --status-blue-fg: #60a5fa;
+  --status-blue-strong: #3b82f6;
+  --status-blue-bg: rgba(59, 130, 246, .14);
+  --status-blue-border: rgba(59, 130, 246, .38);
+
+  --status-amber-fg: #fbbf24;
+  --status-amber-strong: #f59e0b;
+  --status-amber-bg: rgba(245, 158, 11, .14);
+  --status-amber-border: rgba(245, 158, 11, .45);
+
+  --status-red-fg: #f87171;
+  --status-red-strong: #ef4444;
+  --status-red-bg: rgba(239, 68, 68, .14);
+  --status-red-border: rgba(239, 68, 68, .38);
+
+  --status-purple-fg: #c4b5fd;
+  --status-purple-strong: #8b5cf6;
+  --status-purple-bg: rgba(139, 92, 246, .14);
+  --status-purple-border: rgba(139, 92, 246, .38);
 }
 
 .dashboard-root input[type='date']::-webkit-calendar-picker-indicator {
-  filter: invert(70%) sepia(90%) saturate(1200%) hue-rotate(150deg) brightness(95%) contrast(95%);
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+   background: var(--bg-page);
   cursor: pointer;
   opacity: 1;
 }
 
 .dashboard-root {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: var(--bg-page);
+  font-family: var(--font-body), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+   background: var(--bg-page);
   color: var(--text-body);
   height: 100vh;
   /* overflow:clip (not hidden) — hidden is still a valid scroll container per spec, and
@@ -160,12 +189,19 @@
   border-radius: 8px; padding: 3px;
 }
 .sidebar-tab-btn {
-  flex: 1; border: none; background: transparent; cursor: pointer;
-  padding: 8px 10px; text-align: center; font-size: 11px; font-weight: 700;
-  color: var(--text-muted); letter-spacing: .02em; border-radius: 5px;
-  transition: background .15s, color .15s;
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  border: none; background: transparent; cursor: pointer;
+  padding: 9px 10px; text-align: center; font-size: 11px; font-weight: 700;
+  color: var(--text-muted); letter-spacing: .02em; border-radius: 7px;
+  transition: background .15s, color .15s, box-shadow .15s;
 }
-.sidebar-tab-btn.active { background: var(--accent-14); color: var(--accent); box-shadow: 0 0 0 1px var(--accent-32) inset; }
+.sidebar-tab-btn:hover:not(.active) { color: var(--text-body); }
+/* Active tab: solid gradient fill (was a flat 14%-opacity tint) — mockup wants the active
+   pill to read as a real "pressed" button, not just a subtle highlight. */
+.sidebar-tab-btn.active {
+  background: linear-gradient(135deg, #2563eb, var(--accent));
+  color: #ffffff; box-shadow: 0 2px 8px var(--accent-35);
+}
 .sidebar-close-btn {
   flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
   padding: 6px 10px; border-radius: 8px;
@@ -176,10 +212,90 @@
 .sidebar-close-btn:hover { background: var(--accent-10); color: var(--text-body); }
 
 .sidebar-section { padding: 16px; border-bottom: 1px solid var(--border-faint); }
-.sidebar-label { font-size: 10px; font-weight: 700; color: var(--text-strong); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 10px; }
+.sidebar-label { font-family: var(--font-heading); font-size: 10px; font-weight: 700; color: var(--text-strong); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 10px; }
 
 .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .chart-box { background: var(--bg-box); border: 1px solid var(--border-faint-3); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+
+/* Card lift for stat/gauge tiles (KpiGrid, GaugeCard) — in dark mode the page is already
+   near-black so a subtle tinted box reads fine on its own, but in light mode a 10-14% tint
+   on an already-light page barely registers: no shadow, no separation. .stat-tile marks the
+   small colored boxes (Realisasi/Target/Belum Rea, Sudah Bayar/Belum Bayar/dll) so we can
+   give them a real shadow + crisper border without touching every inline style. */
+.stat-tile { box-shadow: 0 1px 2px var(--shadow-40); transition: transform .12s ease, box-shadow .12s ease; }
+.light .dashboard-root .stat-tile { box-shadow: 0 1px 3px var(--shadow-40), 0 1px 2px var(--shadow-45); }
+.light .dashboard-root .chart-box { background: var(--bg-surface); box-shadow: 0 1px 3px var(--shadow-40); }
+
+/* ── Redesigned gauge / KPI cards (icon + trend style) ──────────────────────────────────── */
+.gauge-split { display: grid; grid-template-columns: 200px 1fr; gap: 12px; align-items: center; }
+.gauge-split-chart { min-width: 0; }
+.gauge-split-cards { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+
+.icon-tile {
+  display: flex; align-items: center; gap: 9px;
+  background: var(--tile-bg, var(--bg-box)); border: 1px solid transparent;
+  border-radius: 12px; padding: 8px 10px;
+  box-shadow: 0 1px 2px var(--shadow-40);
+}
+.icon-tile-icon {
+  flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--tile-fg, var(--accent)); background: color-mix(in srgb, var(--tile-fg, var(--accent)) 18%, transparent);
+}
+.icon-tile-label { font-family: var(--font-accent); font-size: 8.5px; color: var(--tile-fg, var(--text-muted)); text-transform: uppercase; letter-spacing: .06em; line-height: 1.3; }
+.icon-tile-value { font-family: var(--font-heading); font-size: 15px; font-weight: 800; color: var(--tile-fg, var(--text-strong)); white-space: nowrap; margin-top: 1px; }
+.icon-tile-value--rp { font-family: var(--font-data); }
+.total-tile { margin: 0 16px 10px; padding: 10px 12px; gap: 10px; }
+.total-tile-icon { width: 38px; height: 38px; border-radius: 50%; color: var(--accent); background: var(--accent-16); }
+.total-tile-year {
+  flex-shrink: 0; text-align: center; font-family: var(--font-accent); font-size: 13px; font-weight: 900; color: var(--accent);
+   background: var(--bg-inset); border: 0px solid var(--status-blue-border); border-radius: 8px;
+   padding: 4px 10px; line-height: 1.5;
+  background: var(--bg-inset); border: 0px solid var(--status-blue-border); border-radius: 8px;
+  padding: 4px 10px; line-height: 1.5;
+}
+.tile-menu-btn {
+  margin-left: auto; flex-shrink: 0; width: 20px; height: 20px; border-radius: 6px; border: none;
+  display: flex; align-items: center; justify-content: center; background: transparent; color: var(--text-faint);
+  cursor: pointer; transition: background .15s, color .15s;
+}
+.tile-menu-btn:hover { background: var(--border-faint-3); color: var(--text-muted); }
+
+.sisa-progress { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-faint-3); }
+.sisa-progress-head { display: flex; align-items: baseline; justify-content: space-between; }
+.sisa-progress-label { font-size: 10px; color: var(--text-muted); }
+.sisa-progress-pct { font-family: var(--font-data); font-size: 10px; font-weight: 700; color: var(--text-body); }
+.sisa-progress-amount { font-family: var(--font-data); font-size: 13px; font-weight: 800; color: var(--text-strong); margin-top: 2px; }
+.sisa-progress-track { height: 6px; border-radius: 4px; background: var(--border-faint-3); margin-top: 6px; overflow: hidden; }
+.sisa-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #2563eb, var(--accent)); transition: width .5s ease; }
+
+.kpi-tile { display: flex; flex-direction: column; gap: 5px; padding: 10px 10px; align-items: stretch; text-align: left; border-radius: 12px; box-shadow: 0 1px 2px var(--shadow-40); }
+.kpi-tile-head { display: flex; align-items: center; gap: 7px; }
+.kpi-tile-label { font-size: 8px; font-weight: 600; color: var(--tile-fg); }
+.kpi-tile-value { font-family: var(--font-heading); font-size: 17px; margin-top: 1px; font-weight: 800; color: var(--text-strong); line-height: 1.3; }
+.kpi-tile-foot { display: flex; flex-direction: column; gap: 3px; }
+.kpi-tile-subtext { font-family: var(--font-accent); font-size: 8px; color: var(--text-muted); }
+.kpi-tile-delta { font-family: var(--font-accent); display: inline-flex; align-items: center; gap: 3px; font-size: 8px; font-weight: 600; width: fit-content; }
+.kpi-tile-delta-up { color: var(--status-green-strong); }
+.kpi-tile-delta-down { color: var(--status-red-strong); }
+
+.total-sppt-city {
+  position: absolute; right: 0; bottom: 0; width: 55%; height: 60%;
+  color: var(--status-purple-strong); opacity: .14; pointer-events: none;
+}
+
+.stat-card-accent {
+  display: flex; flex-direction: column; gap: 3px;
+  background: var(--bg-surface); border: 1px solid var(--border-faint-3);
+  border-left: 3px solid var(--tile-fg);
+  border-radius: 8px; padding: 10px 11px;
+  box-shadow: 0 1px 2px var(--shadow-40);
+}
+.stat-card-accent-head { display: flex; align-items: center; gap: 5px; }
+.stat-card-accent-head svg { color: var(--tile-fg); width: 12px; height: 12px; flex-shrink: 0; }
+.stat-card-accent-label { font-size: 8.5px; font-weight: 700; color: var(--tile-fg); text-transform: uppercase; letter-spacing: .05em; }
+.stat-card-accent-value { font-size: 15px; font-weight: 800; color: var(--tile-fg); white-space: nowrap; }
+.stat-card-accent-sub { font-size: 8.5px; color: var(--text-muted); }
 
 .wilayah-field { margin-bottom: 10px; }
 .wilayah-field:last-child { margin-bottom: 0; }
@@ -244,9 +360,10 @@
 #panel-float { position: absolute; top: 50px; right: 12px; z-index: 25; width: auto; }
 
 .panel-grid {
-  display: flex; flex-direction: column; width: 64px;
-  background: var(--bg-inset); border: 1px solid var(--accent-40);
-  border-radius: 28px; padding: 6px 0;
+  display: flex; flex-direction: column; width: 50px;
+  background: var(--bg-inset); border: 1px solid var(--border-subtle-2);
+  border-radius: 13px; padding: 6px 0;
+  box-shadow: 0 6px 20px var(--shadow-50);
 }
 /* Buttons not relevant to the active sidebar tab stay mounted (see FilterGrid's
    isVisibleForTab) and just collapse to nothing here, so the strip visibly grows/shrinks
@@ -256,18 +373,27 @@
   transition: max-height .3s ease, opacity .2s ease;
 }
 .panel-btn-wrap.panel-btn-hidden { max-height: 0; opacity: 0; }
+/* overflow:hidden above only exists so the collapse/expand transition (tab switching) looks
+   clean — but it was permanent, so it also clipped .float-panel-dropdown, which is an
+   absolutely-positioned child that intentionally renders outside this 50px-tall box. Once a
+   panel is open we switch to overflow:visible so the dropdown can actually show. */
+.panel-btn-wrap.panel-btn-open { overflow: visible; }
 .panel-btn-wrap:first-child .panel-icon-btn { border-top-left-radius: 22px; border-top-right-radius: 22px; }
 .panel-btn-wrap:last-child .panel-icon-btn { border-bottom-left-radius: 22px; border-bottom-right-radius: 22px; }
 .panel-icon-btn {
   width: 100%; min-height: clamp(34px, 5vh, 44px); position: relative;
   display: flex; align-items: center; justify-content: center;
   background: transparent; border: none;
-  color: var(--accent); cursor: pointer;
+  color: var(--text-secondary); cursor: pointer;
   padding: 6px; transition: color .15s, background .15s;
 }
 .panel-icon-btn svg { width: clamp(15px, 2.4vh, 19px); height: clamp(15px, 2.4vh, 19px); flex-shrink: 0; }
 .panel-icon-btn:hover { background: var(--accent-10); color: var(--text-body); }
-.panel-icon-btn.active { color: var(--text-strong); background: var(--accent-22); }
+.panel-icon-btn.active { color: #2563eb; position: relative; }
+.panel-icon-btn.active::before {
+  content: ''; position: absolute; inset: 5px; border-radius: 50%;
+  background: var(--accent-22); z-index: -1;
+}
 
 /* Tooltip: label only shows on hover, to the left of the icon, since the button itself is icon-only now. */
 .panel-icon-btn::after {
@@ -314,18 +440,18 @@
    stack instead (closer to MapLibre's original layout) while keeping this same color/style —
    only tab Time Series uses it. Sizes/gaps/radii are all transitioned so switching tabs
    animates smoothly rather than snapping. */
-.map-nav-ctrl { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; transition: gap .3s ease; }
+.map-nav-ctrl { display: flex; flex-direction: column; gap: 4px; margin-bottom: 6px; transition: gap .3s ease; }
 .map-nav-row {
-  display: flex; flex-direction: row; gap: 6px; background: var(--bg-surface-strong);
-  border: 1px solid var(--border-default); border-radius: 10px;
-  padding: 4px; box-shadow: 0 4px 16px var(--shadow-50);
+  display: flex; flex-direction: row; gap: 4px; background: var(--bg-surface-strong);
+  border: 1px solid var(--border-default); border-radius: 8px;
+  padding: 3px; box-shadow: 0 4px 16px var(--shadow-50);
   transition: border-radius .3s ease, padding .3s ease;
 }
 .map-nav-btn {
-  width: 32px; height: 28px; flex-shrink: 0; border-radius: 7px;
+  width: 24px; height: 22px; flex-shrink: 0; border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
   background: transparent; border: none; color: var(--text-secondary);
-  font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer;
+  font-size: 11px; font-weight: 800; font-family: inherit; cursor: pointer;
   transition: background .15s, color .15s, width .3s ease, height .3s ease;
 }
 .map-nav-btn:hover { background: var(--accent-14); color: var(--accent); }
@@ -333,9 +459,9 @@
 
 #main.tab-timeseries .map-nav-ctrl { gap: 0; }
 #main.tab-timeseries .map-nav-row { flex-direction: column; border-radius: 0; }
-#main.tab-timeseries .map-nav-row:first-child { border-radius: 10px 10px 0 0; border-bottom: none; }
-#main.tab-timeseries .map-nav-row:last-child { border-radius: 0 0 10px 10px; border-top: none; }
-#main.tab-timeseries .map-nav-btn { width: 28px; height: 28px; }
+#main.tab-timeseries .map-nav-row:first-child { border-radius: 8px 8px 0 0; border-bottom: none; }
+#main.tab-timeseries .map-nav-row:last-child { border-radius: 0 0 8px 8px; border-top: none; }
+#main.tab-timeseries .map-nav-btn { width: 22px; height: 22px; }
 
 #tour-hole {
   position: fixed; z-index: 9998; border-radius: 10px; pointer-events: none; display: none;
@@ -373,7 +499,7 @@
 .maplibregl-popup-close-button { color: var(--tour-desc) !important; right: 8px !important; top: 6px !important; font-size: 16px !important; }
 .maplibregl-popup-tip { border-top-color: var(--bg-popup) !important; }
 .pop-head { padding: 10px 14px 8px; border-bottom: 1px solid var(--border-faint-3); }
-.pop-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-top: 4px; }
+.pop-badge { display: inline-block; font-family: var(--font-accent); font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-top: 4px; }
 .pop-body { padding: 8px 14px 12px; }
 .pop-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; font-size: 11px; padding: 3px 0; border-bottom: 1px solid var(--border-faint); }
 .pop-row:last-child { border-bottom: none; }
@@ -412,16 +538,17 @@
 .bm-ctrl.bm-open .bm-swatch:nth-child(1) { transition-delay: .02s; }
 .bm-ctrl.bm-open .bm-swatch:nth-child(2) { transition-delay: .08s; }
 .bm-ctrl.bm-open .bm-swatch:nth-child(3) { transition-delay: .14s; }
+.bm-ctrl.bm-open .bm-swatch:nth-child(4) { transition-delay: .20s; }
 
-.bm-toggle { border: 1px solid var(--border-strong); background: rgba(255, 255, 255, .04); color: var(--text-secondary); font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 6px 12px; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: all .15s; }
+.bm-toggle { border: 1px solid var(--border-subtle-2); background: var(--bg-inset-soft); color: var(--text-secondary); font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 6px 12px; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: all .15s; box-shadow: 0 2px 8px var(--shadow-40); }
 .bm-toggle:hover { background: rgba(255, 255, 255, .1); color: var(--text-strong); }
 .bm-ctrl.bm-open .bm-toggle { background: var(--status-purple); border-color: var(--status-purple); color: var(--text-strong); }
 
 #stat-chip {
   position: absolute; bottom: 32px; right: 48px;
   background: var(--bg-surface); border: 1px solid var(--border-subtle-2);
-  border-radius: 8px; padding: 5px 12px; font-size: 11px; color: var(--text-faint); z-index: 10; pointer-events: none;
-}
+  border-radius: 8px; padding: 5px 12px; font-family: var(--font-accent); font-size: 11px; color: var(--text-faint); z-index: 10; pointer-events: none;
+ }
 
 #hover-tooltip {
   position: absolute; pointer-events: none; z-index: 20;
@@ -516,7 +643,7 @@
   min-width: 56px; padding: 6px 20px; font-size: 11px; font-weight: 700; color: var(--text-muted);
   border-radius: 5px; letter-spacing: .02em; transition: background .15s, color .15s;
 }
-.wilayah-chart-tab.active { background: var(--accent-14); color: var(--accent); box-shadow: 0 0 0 1px var(--accent-32) inset; }
+.wilayah-chart-tab.active { background: linear-gradient(135deg, #2563eb, var(--accent)); color: #ffffff; box-shadow: 0 2px 8px var(--accent-35); }
 
 .wilayah-chart-toggle {
   position: absolute; top: 8px; right: 8px; z-index: 1;
@@ -543,6 +670,13 @@
    same control as the main Filter Waktu icon (see useWilayahRealisasi). */
 .wilayah-chart-yearrange { display: flex; align-items: center; gap: 8px; padding: 10px 90px 8px 14px; }
 .wilayah-chart-yearrange-label { font-size: 10px; font-weight: 700; color: var(--text-strong); text-transform: uppercase; letter-spacing: .06em; }
+.wilayah-chart-download-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--accent-10); border: 1px solid var(--accent-40); border-radius: 6px;
+  padding: 4px 9px; font-size: 10px; font-weight: 700; color: var(--accent); cursor: pointer;
+  transition: background .15s;
+}
+.wilayah-chart-download-btn:hover { background: var(--accent-22); }
 .wilayah-chart-yearrange-sep { font-size: 10px; color: var(--text-faint); }
 .wilayah-chart-yearrange select {
   background: var(--bg-inset-soft); border: 1px solid var(--border-default);
@@ -560,7 +694,14 @@
 .wilayah-chart-legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
 .wilayah-chart-swatch { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
 
-.wilayah-chart-scroll { overflow-x: auto; overflow-y: hidden; padding: 4px 74px 12px 10px; }
+.wilayah-chart-scroll {
+  overflow-x: auto; overflow-y: hidden; padding: 4px 10px 12px 10px;
+  /* Lebar box scroll-nya sendiri dipotong 74px (bukan cuma dikasih padding-kanan) — supaya
+     area yang bisa di-scroll/clip berhenti SEBELUM zona legend, jadi bar gak akan pernah
+     ke-render di bawah legend di posisi scroll manapun (padding doang cuma ngejamin jarak
+     di UJUNG scroll, bukan di sepanjang scroll). */
+  width: calc(100% - 74px);
+}
 .wilayah-chart-scroll::-webkit-scrollbar { height: 4px; }
 .wilayah-chart-scroll::-webkit-scrollbar-track { background: transparent; }
 .wilayah-chart-scroll::-webkit-scrollbar-thumb { background: var(--border-default-2); border-radius: 2px; }
@@ -596,7 +737,31 @@
   --text-faint: #94a3b8;
   --text-disabled: #cbd5e1;
   --text-disabled-2: #e2e8f0;
-  --text-on-accent: #04121f;
+  --text-on-accent: #ffffff;
+
+  /* Accent (cyan) — the dark-mode cyan-400 (#22d3ee) has ~1.9:1 contrast against light
+     surfaces (fails WCAG even for large text/icons), which is why filter icons, active
+     states, and badge text all looked washed out in light mode. Swapped to a darker
+     cyan-700 base (~4.6:1 on white) that keeps the same hue family but is actually
+     readable; alpha tints below are bumped a bit vs. dark mode so tinted backgrounds
+     stay visibly tinted against the light page instead of blending into it. */
+  --accent: #0e7490;
+  --accent-06: rgba(14, 116, 144, .08);
+  --accent-10: rgba(14, 116, 144, .12);
+  --accent-12: rgba(14, 116, 144, .14);
+  --accent-14: rgba(14, 116, 144, .16);
+  --accent-15: rgba(14, 116, 144, .17);
+  --accent-16: rgba(14, 116, 144, .18);
+  --accent-22: rgba(14, 116, 144, .22);
+  --accent-25: rgba(14, 116, 144, .25);
+  --accent-28: rgba(14, 116, 144, .28);
+  --accent-32: rgba(14, 116, 144, .32);
+  --accent-35: rgba(14, 116, 144, .35);
+  --accent-40: rgba(14, 116, 144, .45);
+  --accent-45: rgba(14, 116, 144, .5);
+  --accent-55: rgba(14, 116, 144, .6);
+  --accent-60: rgba(14, 116, 144, .65);
+  --accent-cyan-300: #0891b2;
 
   --border-faint: rgba(15, 23, 42, 0.08);
   --border-faint-2: rgba(15, 23, 42, 0.1);
@@ -626,9 +791,79 @@
   --tour-btn-hover: rgba(15, 23, 42, .06);
   --tour-btn-primary-text: #06121e;
   --tour-hole-dim: rgba(241, 245, 249, .85);
+
+  /* Status semantik — di light mode dikasih bg lebih pekat & border lebih tegas dari versi
+     dark supaya tetap kontras di atas permukaan terang (bukan cuma pastel tipis yang nge-blend). */
+  /* Bumped bg/border opacity vs. the original light values (was .10-.12 bg / .32-.38
+     border) — against a light page (#e7ebf0) those tints barely read as colored at
+     all, which is why the KPI/gauge tiles looked flat. This keeps the same hues but
+     pushes them enough to actually look like distinct colored cards. */
+  --status-green-fg: #15803d;
+  --status-green-strong: #16a34a;
+  --status-green-bg: rgba(22, 163, 74, .16);
+  --status-green-border: rgba(22, 163, 74, .45);
+
+  --status-blue-fg: #1d4ed8;
+  --status-blue-strong: #2563eb;
+  --status-blue-bg: rgba(37, 99, 235, .14);
+  --status-blue-border: rgba(37, 99, 235, .4);
+
+  --status-amber-fg: #b45309;
+  --status-amber-strong: #d97706;
+  --status-amber-bg: rgba(217, 119, 6, .16);
+  --status-amber-border: rgba(217, 119, 6, .45);
+
+  --status-red-fg: #b91c1c;
+  --status-red-strong: #dc2626;
+  --status-red-bg: rgba(220, 38, 38, .14);
+  --status-red-border: rgba(220, 38, 38, .4);
+
+  --status-purple-fg: #6d28d9;
+  --status-purple-strong: #7c3aed;
+  --status-purple-bg: rgba(124, 58, 237, .14);
+  --status-purple-border: rgba(124, 58, 237, .4);
 }
 .light .dashboard-root #sidebar { border-right-color: var(--border-faint-3); }
 .light .dashboard-root .bm-swatch { background-color: rgba(15, 23, 42, .06); }
 .light .dashboard-root .bm-toggle { background: rgba(15, 23, 42, .04); }
 .light .dashboard-root .bm-toggle:hover { background: rgba(15, 23, 42, .08); color: var(--text-strong); }
 .light .dashboard-root .sr-item:hover, .light .dashboard-root .sr-item.sr-active { background: rgba(15, 23, 42, 0.05); }
+.light .dashboard-root .panel-icon-btn { color: #2563eb; }
+.light .dashboard-root .panel-grid { background: #ffffff; }
+.light .dashboard-root #search-mode { color: #2563eb; }
+.light .dashboard-root #search-mode { color: #2563eb; border-color: #2563eb; }
+
+/* Search bar (Alamat/Cari) — background putih & border lebih tebal di light mode (sebelumnya
+   nempel ke --bg-inset abu-abu + border tipis 1px), tombol Cari solid biru bukan cuma tint. */
+.light .dashboard-root #search-mode,
+.light .dashboard-root #search-input {
+  background-color: #ffffff;
+  border-width: 1px;
+  border-color: var(--accent);
+}
+.light .dashboard-root #search-btn {
+  background: #2563eb;
+  border-width: 1px;
+  border-color: #2563eb;
+  color: #ffffff;
+}
+.light .dashboard-root #search-btn:hover { background: #1d4ed8; border-color: #1d4ed8; }
+
+/* Panel chart realisasi RT/RW — background putih (sebelumnya --bg-surface-strong abu-abu). */
+.light .dashboard-root .wilayah-chart-card { background: #ffffff; }
+
+/* Toggle RT/RW — tab aktif solid biru (sebelumnya cuma tint accent-14 yang keliatan transparan). */
+.light .dashboard-root .wilayah-chart-tab.active {
+  background: linear-gradient(135deg, #2563eb, var(--accent));
+  color: #ffffff;
+  box-shadow: 0 2px 8px var(--accent-35);
+}
+
+.distribusi-card { display: flex; align-items: center; gap: 14px; padding: 14px; }
+.distribusi-donut { width: 110px; height: 110px; flex-shrink: 0; }
+.distribusi-legend { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.distribusi-row { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+.distribusi-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+.distribusi-label { color: var(--text-body); font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.distribusi-rp { font-family: var(--font-data); color: var(--text-muted); white-space: nowrap; font-size: 10.5px; }
+.distribusi-pct { font-family: var(--font-data); font-weight: 700; width: 40px; text-align: right; white-space: nowrap; font-size: 10.5px; }

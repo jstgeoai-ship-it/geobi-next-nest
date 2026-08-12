@@ -29,7 +29,7 @@ export function StatusPanel({ selected, onToggle, onSetAll }: Props) {
           onChange={(e) => onSetAll(e.target.checked)}
           title="Pilih / lepas semua status"
         />
-        <span style={{ fontSize: 10, fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '.09em' }}>Status Pembayaran</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-strong)', textTransform: 'uppercase', letterSpacing: '.09em' }}>Status Pembayaran</span>
       </div>
       {STATUS_OPTIONS.map((v) => (
         <label key={v} className="status-toggle">

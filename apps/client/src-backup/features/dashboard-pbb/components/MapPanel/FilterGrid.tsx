@@ -1,0 +1,121 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import {
+  KATEGORI_NJOP_OPTIONS,
+  KATEGORI_PBB_OPTIONS,
+  type PanelId,
+  useFiltersStore,
+} from '../../store/filters.store';
+import { CategoryPanel } from './panels/CategoryPanel';
+import { StatusPanel } from './panels/StatusPanel';
+import { WilayahPanel } from './panels/WilayahPanel';
+import { WaktuPanel } from './panels/WaktuPanel';
+import { LayerPanel } from './panels/LayerPanel';
+
+const KATEGORI_PBB_LABELS: Record<string, { label: string; hint: string }> = {
+  tinggi: { label: 'Tinggi', hint: '> Rp 15.485.100' },
+  sedang: { label: 'Sedang', hint: 'Rp 7.005.100 – 15.485.600' },
+  rendah: { label: 'Rendah', hint: '< Rp 7.005.000' },
+  tidak_kena_pajak: { label: 'Tidak Kena Pajak', hint: 'Rp 0' },
+};
+
+function njopOptions(hints: [string, string, string, string]) {
+  return KATEGORI_NJOP_OPTIONS.map((v, i) => ({ value: v, label: v, hint: hints[i] }));
+}
+
+const BUTTONS: { id: PanelId; btnId: string; label: string; icon: string }[] = [
+  { id: 'panelWaktu', btnId: 'btnPanelWaktu', label: 'Filter Waktu', icon: '<circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/>' },
+  { id: 'panelKategori', btnId: 'btnPanelKategori', label: 'Kategori PBB', icon: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>' },
+  { id: 'panelWilayah', btnId: 'btnPanelWilayah', label: 'Filter Wilayah', icon: '<path d="M12 21s-7-5.686-7-11a7 7 0 1 1 14 0c0 5.314-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>' },
+  { id: 'panelNjop', btnId: 'btnPanelNjop', label: 'Kategori NJOP Total', icon: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5h5M9.5 12h5M12 9v6"/>' },
+  { id: 'panelStatus', btnId: 'btnPanelStatus', label: 'Status Pembayaran', icon: '<path d="M20 6L9 17l-5-5"/>' },
+  { id: 'panelNjopBumi', btnId: 'btnPanelNjopBumi', label: 'Kategori NJOP Bumi', icon: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>' },
+  { id: 'panelLayer', btnId: 'btnPanelLayer', label: 'Layer Peta', icon: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>' },
+  { id: 'panelNjopBangunan', btnId: 'btnPanelNjopBangunan', label: 'Kategori NJOP Bangunan', icon: '<path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h2M9 13h2M9 17h2M13 9h2M13 13h2M13 17h2"/>' },
+];
+
+export function FilterGrid({ waktuPanelVariant }: { waktuPanelVariant: 'segmented' | 'plain' }) {
+  const openPanel = useFiltersStore((s) => s.openPanel);
+  const togglePanel = useFiltersStore((s) => s.togglePanel);
+  const closeAllPanels = useFiltersStore((s) => s.closeAllPanels);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) closeAllPanels();
+    }
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, [closeAllPanels]);
+
+  const kategoriPbb = useFiltersStore((s) => s.kategoriPbb);
+  const toggleKategoriPbb = useFiltersStore((s) => s.toggleKategoriPbb);
+  const setAllKategoriPbb = useFiltersStore((s) => s.setAllKategoriPbb);
+
+  const kategoriNjop = useFiltersStore((s) => s.kategoriNjop);
+  const toggleKategoriNjop = useFiltersStore((s) => s.toggleKategoriNjop);
+  const setAllKategoriNjop = useFiltersStore((s) => s.setAllKategoriNjop);
+
+  const kategoriNjopBumi = useFiltersStore((s) => s.kategoriNjopBumi);
+  const toggleKategoriNjopBumi = useFiltersStore((s) => s.toggleKategoriNjopBumi);
+  const setAllKategoriNjopBumi = useFiltersStore((s) => s.setAllKategoriNjopBumi);
+
+  const kategoriNjopBangunan = useFiltersStore((s) => s.kategoriNjopBangunan);
+  const toggleKategoriNjopBangunan = useFiltersStore((s) => s.toggleKategoriNjopBangunan);
+  const setAllKategoriNjopBangunan = useFiltersStore((s) => s.setAllKategoriNjopBangunan);
+
+  const status = useFiltersStore((s) => s.status);
+  const toggleStatus = useFiltersStore((s) => s.toggleStatus);
+  const setAllStatus = useFiltersStore((s) => s.setAllStatus);
+
+  return (
+    <div id="panel-float" ref={rootRef}>
+      <div className="panel-grid">
+        {BUTTONS.map((b) => (
+          <button
+            key={b.id}
+            id={b.btnId}
+            className={`panel-icon-btn${openPanel === b.id ? ' active' : ''}`}
+            type="button"
+            onClick={() => togglePanel(b.id)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: b.icon }} />
+            {b.label}
+          </button>
+        ))}
+      </div>
+
+      {openPanel === 'panelWilayah' && <div className="float-panel-dropdown open"><WilayahPanel /></div>}
+      {openPanel === 'panelWaktu' && <div className="float-panel-dropdown open"><WaktuPanel variant={waktuPanelVariant} /></div>}
+      {openPanel === 'panelKategori' && (
+        <div className="float-panel-dropdown open">
+          <CategoryPanel
+            title="Kategori PBB yang Harus Bayar"
+            options={KATEGORI_PBB_OPTIONS.map((v) => ({ value: v, ...KATEGORI_PBB_LABELS[v] }))}
+            selected={kategoriPbb}
+            onToggle={toggleKategoriPbb}
+            onSetAll={setAllKategoriPbb}
+          />
+        </div>
+      )}
+      {openPanel === 'panelNjop' && (
+        <div className="float-panel-dropdown open">
+          <CategoryPanel title="Kategori NJOP Total" options={njopOptions(['> Rp 7,70 M', 'Rp 3,52 M – 7,69 M', '< Rp 3,52 M', 'Rp 0'])} selected={kategoriNjop} onToggle={toggleKategoriNjop} onSetAll={setAllKategoriNjop} />
+        </div>
+      )}
+      {openPanel === 'panelStatus' && <div className="float-panel-dropdown open"><StatusPanel selected={status} onToggle={toggleStatus} onSetAll={setAllStatus} /></div>}
+      {openPanel === 'panelNjopBumi' && (
+        <div className="float-panel-dropdown open">
+          <CategoryPanel title="Kategori NJOP Bumi" options={njopOptions(['> Rp 6,15 M', 'Rp 2,75 M – 6,14 M', '< Rp 2,75 M', 'Rp 0'])} selected={kategoriNjopBumi} onToggle={toggleKategoriNjopBumi} onSetAll={setAllKategoriNjopBumi} />
+        </div>
+      )}
+      {openPanel === 'panelLayer' && <div className="float-panel-dropdown open"><LayerPanel /></div>}
+      {openPanel === 'panelNjopBangunan' && (
+        <div className="float-panel-dropdown open">
+          <CategoryPanel title="Kategori NJOP Bangunan" options={njopOptions(['> Rp 1,48 M', 'Rp 0,6 M – 1,48 M', '< Rp 0,6 M', 'Rp 0'])} selected={kategoriNjopBangunan} onToggle={toggleKategoriNjopBangunan} onSetAll={setAllKategoriNjopBangunan} />
+        </div>
+      )}
+    </div>
+  );
+}

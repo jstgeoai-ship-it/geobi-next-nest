@@ -32,7 +32,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div>
-      <div className="mb-4 text-sm text-gray-600">
+      <div className="mb-4 text-sm text-[var(--pub-muted-3)]">
         Forgot your password? No problem. Just let us know your email address and we will email
         you a password reset link that will allow you to choose a new one.
       </div>
@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Email</label>
           <input
             type="email"
             value={email}
@@ -58,7 +58,7 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-gray-800 text-white px-4 py-2 rounded disabled:opacity-50"
+            className="bg-gray-800 text-[var(--pub-text)] px-4 py-2 rounded disabled:opacity-50"
           >
             {loading ? 'Sending…' : 'Email Password Reset Link'}
           </button>

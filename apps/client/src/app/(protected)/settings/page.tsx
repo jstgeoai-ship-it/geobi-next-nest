@@ -1,84 +1,72 @@
 'use client';
 
-import { Navbar } from '@/components/Navbar';
-import { useTheme } from '@/lib/useTheme';
+import { useState } from 'react';
+import { SettingsCard, Field, TextInput, SelectInput } from '@/components/settings/ui';
 
-function Card({ children }: { children: React.ReactNode }) {
+/** Halaman ini murni UI — belum ada endpoint /api/settings di server buat nyimpen field-field
+ *  ini, jadi state di bawah cuma lokal (gak persist kalau reload). Tombol "Simpan Perubahan"
+ *  sengaja belum di-wire ke mana-mana; tinggal disambungin kalau backend-nya udah ada. */
+export default function PengaturanUmumPage() {
+  const [namaInstansi, setNamaInstansi] = useState('Badan Pendapatan Daerah Provinsi DKI Jakarta');
+  const [kodeInstansi, setKodeInstansi] = useState('BAPENDA-DKI');
+  const [alamat, setAlamat] = useState('Jl. Abdul Muis No.66, Gambir, Jakarta Pusat');
+  const [email, setEmail] = useState('info@bapenda.jakarta.go.id');
+  const [telepon, setTelepon] = useState('(021) 1234 5678');
+
+  const [tahunPajak, setTahunPajak] = useState('2026');
+  const [wilayah, setWilayah] = useState('Semua Wilayah');
+  const [rtRw, setRtRw] = useState('Semua');
+  const [dataPerHalaman, setDataPerHalaman] = useState('20');
+
   return (
-    <div className="p-4 sm:p-8 bg-slate-900 light:bg-slate-50 border border-white/10 light:border-gray-200 shadow-lg sm:rounded-xl">
-      <div className="max-w-xl">{children}</div>
-    </div>
-  );
-}
-
-function AppearanceSection() {
-  const { theme, setTheme } = useTheme();
-
-  return (
-    <section>
-      <header>
-        <h2 className="text-lg font-medium text-white light:text-gray-900">Appearance</h2>
-        <p className="mt-1 text-sm text-slate-400 light:text-gray-600">Pilih tampilan yang kamu suka untuk seluruh halaman GeoBI.</p>
-      </header>
-
-      <div className="mt-6 flex gap-4">
-        <button
-          type="button"
-          onClick={() => setTheme('dark')}
-          className={`flex-1 rounded-lg border p-4 text-left transition-colors ${
-            theme === 'dark'
-              ? 'border-cyan-400 bg-cyan-400/10'
-              : 'border-white/10 light:border-gray-200 hover:bg-white/5 light:hover:bg-gray-50'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-white light:text-gray-900">Dark</span>
-            {theme === 'dark' && <span className="text-cyan-400 text-xs">● Aktif</span>}
-          </div>
-          <div className="mt-3 h-14 rounded-md bg-slate-950 border border-white/10 flex items-center gap-1.5 px-2">
-            <span className="w-2 h-2 rounded-full bg-slate-700" />
-            <span className="h-1.5 flex-1 rounded bg-slate-700" />
-          </div>
-          <p className="mt-2 text-xs text-slate-400 light:text-gray-500">Latar gelap, teks putih.</p>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setTheme('light')}
-          className={`flex-1 rounded-lg border p-4 text-left transition-colors ${
-            theme === 'light'
-              ? 'border-cyan-400 bg-cyan-400/10'
-              : 'border-white/10 light:border-gray-200 hover:bg-white/5 light:hover:bg-gray-50'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-white light:text-gray-900">Light</span>
-            {theme === 'light' && <span className="text-cyan-400 text-xs">● Aktif</span>}
-          </div>
-          <div className="mt-3 h-14 rounded-md bg-gray-100 border border-gray-300 flex items-center gap-1.5 px-2">
-            <span className="w-2 h-2 rounded-full bg-gray-400" />
-            <span className="h-1.5 flex-1 rounded bg-gray-300" />
-          </div>
-          <p className="mt-2 text-xs text-slate-400 light:text-gray-500">Latar abu muda/putih, teks hitam.</p>
+    <div>
+      <div className="flex justify-end mb-4">
+        <button type="button" className="rounded-lg bg-cyan-500 hover:bg-cyan-400 text-white text-sm font-medium px-4 py-2 transition-colors">
+          Simpan Perubahan
         </button>
       </div>
-    </section>
-  );
-}
 
-export default function SettingsPage() {
-  return (
-    <div className="min-h-screen bg-black light:bg-slate-100 pt-16">
-      <Navbar />
-      <header className="bg-slate-900 light:bg-slate-50 border-b border-white/10 light:border-gray-200">
-        <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-          <h2 className="font-semibold text-xl text-cyan-400 leading-tight">Settings</h2>
-        </div>
-      </header>
-      <div className="py-12">
-        <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-          <Card><AppearanceSection /></Card>
-        </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <SettingsCard title="Informasi Instansi">
+          <div className="space-y-4">
+            <Field label="Nama Instansi"><TextInput value={namaInstansi} onChange={(e) => setNamaInstansi(e.target.value)} /></Field>
+            <Field label="Kode Instansi"><TextInput value={kodeInstansi} onChange={(e) => setKodeInstansi(e.target.value)} /></Field>
+            <Field label="Alamat"><TextInput value={alamat} onChange={(e) => setAlamat(e.target.value)} /></Field>
+            <Field label="Email Instansi"><TextInput type="email" value={email} onChange={(e) => setEmail(e.target.value)} /></Field>
+            <Field label="No. Telepon"><TextInput value={telepon} onChange={(e) => setTelepon(e.target.value)} /></Field>
+          </div>
+        </SettingsCard>
+
+        <SettingsCard title="Preferensi Dashboard">
+          <div className="space-y-4">
+            <Field label="Tahun Pajak Default">
+              <SelectInput value={tahunPajak} onChange={(e) => setTahunPajak(e.target.value)}>
+                {['2026', '2025', '2024'].map((y) => <option key={y} value={y}>{y}</option>)}
+              </SelectInput>
+            </Field>
+            <Field label="Wilayah Default">
+              <SelectInput value={wilayah} onChange={(e) => setWilayah(e.target.value)}>
+                <option>Semua Wilayah</option>
+                <option>Jakarta Pusat</option>
+                <option>Jakarta Utara</option>
+                <option>Jakarta Barat</option>
+                <option>Jakarta Selatan</option>
+                <option>Jakarta Timur</option>
+              </SelectInput>
+            </Field>
+            <Field label="RT/RW Default">
+              <SelectInput value={rtRw} onChange={(e) => setRtRw(e.target.value)}>
+                <option>Semua</option>
+              </SelectInput>
+            </Field>
+            <Field label="Data per Halaman">
+              <SelectInput value={dataPerHalaman} onChange={(e) => setDataPerHalaman(e.target.value)}>
+                {['10', '20', '50', '100'].map((n) => <option key={n} value={n}>{n}</option>)}
+              </SelectInput>
+            </Field>
+            <p className="text-xs text-[var(--pub-muted-3)] pt-1">Pengaturan ini akan digunakan sebagai default saat Anda membuka dashboard.</p>
+          </div>
+        </SettingsCard>
       </div>
     </div>
   );

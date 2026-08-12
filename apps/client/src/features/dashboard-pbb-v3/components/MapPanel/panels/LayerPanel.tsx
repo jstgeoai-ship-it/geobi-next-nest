@@ -12,7 +12,7 @@ export function LayerPanel() {
 
   return (
     <div>
-      <div style={{ fontSize: 10, fontWeight: 700, color: '#ffffff', textTransform: 'uppercase', letterSpacing: '.09em', marginBottom: 8 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-strong)', textTransform: 'uppercase', letterSpacing: '.09em', marginBottom: 8 }}>
         Batas Wilayah
       </div>
       <div className="layer-toggle">

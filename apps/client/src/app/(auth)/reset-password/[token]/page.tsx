@@ -52,7 +52,7 @@ function ResetPasswordForm() {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Email</label>
+        <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Email</label>
         <input
           type="email"
           value={email}
@@ -64,7 +64,7 @@ function ResetPasswordForm() {
       </div>
 
       <div className="mt-4">
-        <label className="block text-sm font-medium text-gray-700">Password</label>
+        <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Password</label>
         <input
           type="password"
           value={password}
@@ -76,7 +76,7 @@ function ResetPasswordForm() {
       </div>
 
       <div className="mt-4">
-        <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+        <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Confirm Password</label>
         <input
           type="password"
           value={passwordConfirmation}
@@ -93,7 +93,7 @@ function ResetPasswordForm() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-gray-800 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="bg-gray-800 text-[var(--pub-text)] px-4 py-2 rounded disabled:opacity-50"
         >
           {loading ? 'Resetting…' : 'Reset Password'}
         </button>

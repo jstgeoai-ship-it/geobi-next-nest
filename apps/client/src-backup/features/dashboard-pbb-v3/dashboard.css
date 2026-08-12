@@ -1,0 +1,634 @@
+/* Ported from geobi (Laravel) resources/views/katalog/dashboard.blade.php <style> block. */
+
+/* All colors below are CSS custom properties so .light .dashboard-root (see bottom of file)
+   can override them for the light theme (see useTheme.ts) — every variable here is defined
+   to exactly match this file's previous literal dark-theme values, so switching to variables
+   changes nothing visually until .light is actually applied. */
+.dashboard-root {
+  --bg-page: #0a0f1e;
+  --bg-surface: rgba(6, 12, 30, 0.95);
+  --bg-surface-strong: rgba(6, 12, 30, 0.97);
+  --bg-surface-max: rgba(6, 12, 30, 0.98);
+  --bg-inset: rgba(2, 6, 23, 0.92);
+  --bg-inset-heavy: rgba(2, 6, 23, 0.96);
+  --bg-inset-soft: rgba(2, 6, 23, 0.6);
+  --bg-inset-faint: rgba(2, 6, 23, 0.5);
+  --bg-inset-blur: rgba(2, 6, 23, .85);
+  --bg-box: rgba(15, 23, 42, 0.7);
+  --bg-popup: #0f172a;
+  --bg-hover-opaque: rgba(21, 60, 74, 0.95);
+  --bg-option: #0a0f1e;
+
+  --text-strong: #ffffff;
+  --text-body: #e2e8f0;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+  --text-disabled: #475569;
+  --text-disabled-2: #334155;
+  --text-on-accent: #04121f;
+
+  --border-faint: rgba(255, 255, 255, 0.04);
+  --border-faint-2: rgba(255, 255, 255, 0.05);
+  --border-faint-3: rgba(255, 255, 255, 0.06);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-subtle-2: rgba(255, 255, 255, 0.08);
+  --border-subtle-3: rgba(255, 255, 255, 0.09);
+  --border-default: rgba(255, 255, 255, 0.10);
+  --border-default-2: rgba(255, 255, 255, 0.12);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-white-half: rgba(255, 255, 255, .5);
+
+  --accent: #22d3ee;
+  --accent-06: rgba(34, 211, 238, .06);
+  --accent-10: rgba(34, 211, 238, .1);
+  --accent-12: rgba(34, 211, 238, .12);
+  --accent-14: rgba(34, 211, 238, .14);
+  --accent-15: rgba(34, 211, 238, 0.15);
+  --accent-16: rgba(34, 211, 238, .16);
+  --accent-22: rgba(34, 211, 238, .22);
+  --accent-25: rgba(34, 211, 238, .25);
+  --accent-28: rgba(34, 211, 238, .28);
+  --accent-32: rgba(34, 211, 238, .32);
+  --accent-35: rgba(34, 211, 238, .35);
+  --accent-40: rgba(34, 211, 238, .4);
+  --accent-45: rgba(34, 211, 238, .45);
+  --accent-55: rgba(34, 211, 238, .55);
+  --accent-60: rgba(34, 211, 238, .6);
+  --accent-cyan-300: #67e8f9;
+
+  --shadow-40: rgba(0, 0, 0, .4);
+  --shadow-45: rgba(0, 0, 0, .45);
+  --shadow-50: rgba(0, 0, 0, .5);
+  --shadow-55: rgba(0, 0, 0, .55);
+  --shadow-60: rgba(0, 0, 0, .6);
+  --shadow-65: rgba(0, 0, 0, .65);
+
+  --tour-box-bg: #ffffff;
+  --tour-box-border: rgba(34, 211, 238, .45);
+  --tour-title: #0f172a;
+  --tour-desc: #475569;
+  --tour-dots: #94a3b8;
+  --tour-btn-text: #334155;
+  --tour-btn-border: rgba(15, 23, 42, .15);
+  --tour-btn-hover: rgba(15, 23, 42, .06);
+  --tour-btn-primary-text: #06121e;
+  --tour-hole-dim: rgba(2, 6, 23, .78);
+
+  --status-purple: #7c3aed;
+}
+
+.dashboard-root input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(70%) sepia(90%) saturate(1200%) hue-rotate(150deg) brightness(95%) contrast(95%);
+  cursor: pointer;
+  opacity: 1;
+}
+
+.dashboard-root {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg-page);
+  color: var(--text-body);
+  height: 100vh;
+  /* overflow:clip (not hidden) — hidden is still a valid scroll container per spec, and
+     focusing any MapLibre control button (Home/geolocate/basemap/tour) makes the browser
+     auto-scroll it into view, permanently shifting every absolutely-positioned overlay
+     inside #main. clip blocks scrolling outright, including this programmatic kind. */
+  overflow: clip;
+  display: flex;
+  flex-direction: column;
+  padding-top: 64px;
+}
+
+/* min-height:0 is required here: unlike overflow:hidden/auto/scroll, overflow:clip does NOT
+   trigger the flexbox "automatic minimum size is 0" rule in Chromium, so without this the
+   flex item balloons to its content's natural height (the tall sidebar) instead of being
+   clamped to the available viewport space — which also broke #sidebar's own internal scroll
+   and pushed the map controls (anchored to #main's bottom) off-screen. */
+#workspace { flex: 1; display: flex; overflow: clip; min-height: 0; position: relative; }
+
+/* Overlays the map instead of sitting in the flex flow — expanding/collapsing it must never
+   resize #main (that would resize the MapLibre canvas and visibly shift/reflow the map face). */
+
+#sidebar {
+  position: absolute; top: 0; left: 0; height: 100%; z-index: 20;
+  width: clamp(300px, 37.5vw, 500px); flex-shrink: 0;
+  background: var(--bg-surface);
+  border-right: 1px solid var(--border-faint-3);
+  display: flex; flex-direction: column;
+  overflow-y: auto; overflow-x: hidden;
+  transition: width .28s cubic-bezier(.4, 0, .2, 1);
+}
+#sidebar.collapsed { width: 44px; }
+#sidebar::-webkit-scrollbar { width: 4px; }
+#sidebar::-webkit-scrollbar-track { background: transparent; }
+#sidebar::-webkit-scrollbar-thumb { background: var(--border-subtle-2); border-radius: 2px; }
+
+/* Shown only while #sidebar.collapsed — matches the map-filter icon strip's pill styling
+   (.panel-grid/.panel-icon-btn) so collapsed sidebar reads as the same design language.
+   Pembayaran/Time Series double as tab shortcuts: clicking one expands + switches tab. */
+@keyframes collapsedStripIn {
+  from { opacity: 0; transform: scale(.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+.sidebar-collapsed-strip {
+  margin: 10px auto 0; width: 30px;
+  display: flex; flex-direction: column;
+  background: var(--bg-inset); border: 1px solid var(--accent-40);
+  border-radius: 20px; padding: 4px 0;
+  animation: collapsedStripIn .22s cubic-bezier(.34, 1.56, .64, 1) forwards;
+}
+.sidebar-collapsed-btn {
+  width: 100%; min-height: 34px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none;
+  color: var(--accent); cursor: pointer;
+  transition: color .15s, background .15s;
+}
+.sidebar-collapsed-btn:first-child { border-top-left-radius: 16px; border-top-right-radius: 16px; }
+.sidebar-collapsed-btn:last-child { border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
+.sidebar-collapsed-btn:hover { background: var(--accent-10); color: var(--text-body); }
+.sidebar-collapsed-btn.active { color: var(--text-strong); background: var(--accent-22); }
+
+.sidebar-tabs-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px 12px 0; flex-shrink: 0; position: sticky; top: 0; z-index: 5;
+  background: var(--bg-surface);
+}
+.sidebar-tabs {
+  flex: 1; display: flex; gap: 0;
+  background: var(--bg-inset-soft); border: 1px solid var(--border-subtle-2);
+  border-radius: 8px; padding: 3px;
+}
+.sidebar-tab-btn {
+  flex: 1; border: none; background: transparent; cursor: pointer;
+  padding: 8px 10px; text-align: center; font-size: 11px; font-weight: 700;
+  color: var(--text-muted); letter-spacing: .02em; border-radius: 5px;
+  transition: background .15s, color .15s;
+}
+.sidebar-tab-btn.active { background: var(--accent-14); color: var(--accent); box-shadow: 0 0 0 1px var(--accent-32) inset; }
+.sidebar-close-btn {
+  flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  padding: 6px 10px; border-radius: 8px;
+  background: var(--bg-inset-soft); border: 1px solid var(--border-subtle-2);
+  color: var(--text-muted); font-size: 9px; font-weight: 600; cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.sidebar-close-btn:hover { background: var(--accent-10); color: var(--text-body); }
+
+.sidebar-section { padding: 16px; border-bottom: 1px solid var(--border-faint); }
+.sidebar-label { font-size: 10px; font-weight: 700; color: var(--text-strong); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 10px; }
+
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.chart-box { background: var(--bg-box); border: 1px solid var(--border-faint-3); border-radius: 10px; padding: 14px; margin-bottom: 10px; }
+
+.wilayah-field { margin-bottom: 10px; }
+.wilayah-field:last-child { margin-bottom: 0; }
+.wilayah-field-label { font-size: 10px; font-weight: 700; color: var(--text-strong); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 4px; display: block; }
+.wilayah-select {
+  width: 100%; display: block;
+  background: var(--bg-box); border: 1px solid var(--border-default);
+  border-radius: 6px; padding: 6px 8px;
+  color: var(--text-strong); font-size: 12px; font-family: inherit; line-height: 1.4;
+  outline: none; transition: border-color .15s;
+}
+.wilayah-select:focus { border-color: var(--accent-40); }
+.wilayah-select:disabled { color: var(--text-disabled); cursor: not-allowed; }
+
+.dp-trigger { display: flex; align-items: center; justify-content: space-between; gap: 8px; text-align: left; cursor: pointer; }
+.dp-trigger svg { width: 13px; height: 13px; color: var(--accent); flex-shrink: 0; }
+.dp-trigger .dp-kosong { color: var(--text-faint); }
+.dp-pop { margin-top: 6px; background: var(--bg-inset-heavy); border: 1px solid var(--accent-25); border-radius: 8px; padding: 8px; position: relative; z-index: 40; }
+.dp-head { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+.dp-nav, .dp-title { background: transparent; border: 1px solid transparent; border-radius: 5px; color: var(--text-body); font-family: inherit; cursor: pointer; line-height: 1; transition: background .15s, color .15s, border-color .15s; }
+.dp-nav { width: 24px; height: 24px; font-size: 15px; flex-shrink: 0; }
+.dp-title { flex: 1; height: 24px; font-size: 11.5px; font-weight: 700; color: var(--accent); }
+.dp-nav:hover, .dp-title:hover { background: var(--accent-12); }
+.dp-title[aria-pressed="true"] { border-color: var(--accent-35); }
+.dp-dow { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; margin-bottom: 3px; }
+.dp-dow span { text-align: center; font-size: 9px; font-weight: 700; color: var(--text-strong); letter-spacing: .02em; }
+.dp-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.dp-day, .dp-year, .dp-month { background: transparent; border: none; border-radius: 5px; color: var(--text-strong); font-family: inherit; cursor: pointer; transition: background .12s, color .12s; }
+.dp-day { height: 26px; font-size: 11px; }
+.dp-day.dp-luar { color: var(--text-disabled); }
+.dp-day:hover:not(:disabled), .dp-year:hover:not(:disabled), .dp-month:hover:not(:disabled) { background: var(--accent-15); color: var(--text-body); }
+.dp-day.dp-sel, .dp-year.dp-sel, .dp-month.dp-sel { background: var(--accent); color: var(--text-on-accent); font-weight: 700; }
+.dp-day:disabled, .dp-year:disabled, .dp-month:disabled { color: var(--text-disabled-2); cursor: not-allowed; background: transparent; }
+.dp-years { position: relative; max-height: 196px; overflow-y: auto; }
+.dp-years::-webkit-scrollbar { width: 6px; }
+.dp-years::-webkit-scrollbar-thumb { background: var(--border-default-2); border-radius: 3px; }
+.dp-year { display: block; width: 100%; padding: 5px 8px; font-size: 11.5px; text-align: center; }
+.dp-months { display: grid; grid-template-columns: repeat(4,1fr); gap: 3px; }
+.dp-month { padding: 6px 0; font-size: 10.5px; }
+.dp-aksi { display: flex; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border-subtle); }
+.dp-aksi-btn { flex: 1; padding: 6px 0; border-radius: 5px; background: transparent; border: 1px solid var(--border-default-2); color: var(--text-secondary); font-family: inherit; font-size: 10.5px; font-weight: 600; cursor: pointer; transition: background .15s, color .15s, border-color .15s; }
+.dp-aksi-utama { border-color: var(--accent-35); color: var(--accent); }
+.dp-aksi-btn:hover:not(:disabled) { background: var(--accent-12); border-color: var(--accent-45); color: var(--accent); }
+.dp-aksi-btn:disabled { color: var(--text-disabled-2); border-color: var(--border-faint-3); cursor: not-allowed; }
+.dp-kunci { margin-top: 8px; font-size: 9.5px; color: var(--text-strong); line-height: 1.35; text-align: center; }
+
+.layer-toggle { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+.layer-toggle label { font-size: 11px; color: var(--text-strong); display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.layer-toggle input[type=checkbox] { accent-color: var(--accent); width: 14px; height: 14px; }
+
+.status-toggle { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 11px; color: var(--text-strong); cursor: pointer; }
+.status-toggle input[type=checkbox] { accent-color: var(--accent); width: 14px; height: 14px; }
+.status-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+#main { flex: 1; display: flex; flex-direction: column; overflow: clip; position: relative; min-height: 0; min-width: 0; }
+#map { flex: 1; }
+
+#search-float { position: absolute; top: 12px; right: 12px; z-index: 20; width: 300px; }
+/* z-index above .wilayah-chart-panel (15) — this establishes its own stacking context, so its
+   dropdown children's own z-index (30) only matters within it; if this were still lower than
+   the chart panel, the whole filter strip + any open dropdown would render behind it. */
+#panel-float { position: absolute; top: 50px; right: 12px; z-index: 25; width: auto; }
+
+.panel-grid {
+  display: flex; flex-direction: column; width: 64px;
+  background: var(--bg-inset); border: 1px solid var(--accent-40);
+  border-radius: 28px; padding: 6px 0;
+}
+/* Buttons not relevant to the active sidebar tab stay mounted (see FilterGrid's
+   isVisibleForTab) and just collapse to nothing here, so the strip visibly grows/shrinks
+   instead of snapping when switching tabs. */
+.panel-btn-wrap {
+  position: relative; max-height: 50px; opacity: 1; overflow: hidden;
+  transition: max-height .3s ease, opacity .2s ease;
+}
+.panel-btn-wrap.panel-btn-hidden { max-height: 0; opacity: 0; }
+.panel-btn-wrap:first-child .panel-icon-btn { border-top-left-radius: 22px; border-top-right-radius: 22px; }
+.panel-btn-wrap:last-child .panel-icon-btn { border-bottom-left-radius: 22px; border-bottom-right-radius: 22px; }
+.panel-icon-btn {
+  width: 100%; min-height: clamp(34px, 5vh, 44px); position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none;
+  color: var(--accent); cursor: pointer;
+  padding: 6px; transition: color .15s, background .15s;
+}
+.panel-icon-btn svg { width: clamp(15px, 2.4vh, 19px); height: clamp(15px, 2.4vh, 19px); flex-shrink: 0; }
+.panel-icon-btn:hover { background: var(--accent-10); color: var(--text-body); }
+.panel-icon-btn.active { color: var(--text-strong); background: var(--accent-22); }
+
+/* Tooltip: label only shows on hover, to the left of the icon, since the button itself is icon-only now. */
+.panel-icon-btn::after {
+  content: attr(data-label);
+  position: absolute; top: 50%; right: calc(100% + 8px); transform: translateY(-50%) translateX(4px);
+  background: var(--bg-surface-strong); border: 1px solid var(--border-default-2);
+  color: var(--text-body); font-size: 10.5px; font-weight: 600; white-space: nowrap;
+  padding: 5px 10px; border-radius: 6px; box-shadow: 0 4px 14px var(--shadow-50);
+  opacity: 0; pointer-events: none; z-index: 40;
+  transition: opacity .12s ease, transform .12s ease;
+}
+.panel-icon-btn:hover::after { opacity: 1; transform: translateY(-50%) translateX(0); }
+.panel-icon-btn.active::after { display: none; }
+
+@keyframes panelSlideIn {
+  from { opacity: 0; transform: translateY(-50%) translateX(14px); }
+  to { opacity: 1; transform: translateY(-50%) translateX(0); }
+}
+@keyframes panelSlideInTop {
+  from { opacity: 0; transform: translateX(14px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.float-panel-dropdown {
+  position: absolute; top: 50%; right: calc(100% + 8px); width: 300px;
+  transform: translateY(-50%);
+  background: var(--bg-surface-strong); border: 1px solid var(--border-default-2);
+  border-radius: 10px; padding: 12px; z-index: 30;
+  box-shadow: 0 8px 24px var(--shadow-60);
+  max-height: 70vh; overflow-y: auto;
+  animation: panelSlideIn .22s cubic-bezier(.34, 1.56, .64, 1) forwards;
+}
+/* Layer Peta / Filter Waktu sit right under the search bar — centering their panel
+   on the button pushes it up into the search bar, so anchor these two to the top instead. */
+.panel-btn-wrap:nth-child(1) .float-panel-dropdown,
+.panel-btn-wrap:nth-child(2) .float-panel-dropdown {
+  top: 0;
+  animation-name: panelSlideInTop;
+}
+
+/* Home/Locate/Help + Zoom/Compass — two compact horizontal rows by default (tab Pembayaran),
+   width matching MapToolsControl's collapsed "BaseMap" pill (3 buttons * 28px + 2 * 6px gap +
+   8px padding = 104px vs. bm-ctrl's ~104px collapsed) so the stacked widgets read as one
+   consistent column. #main.tab-timeseries below merges both rows into one tall vertical
+   stack instead (closer to MapLibre's original layout) while keeping this same color/style —
+   only tab Time Series uses it. Sizes/gaps/radii are all transitioned so switching tabs
+   animates smoothly rather than snapping. */
+.map-nav-ctrl { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; transition: gap .3s ease; }
+.map-nav-row {
+  display: flex; flex-direction: row; gap: 6px; background: var(--bg-surface-strong);
+  border: 1px solid var(--border-default); border-radius: 10px;
+  padding: 4px; box-shadow: 0 4px 16px var(--shadow-50);
+  transition: border-radius .3s ease, padding .3s ease;
+}
+.map-nav-btn {
+  width: 32px; height: 28px; flex-shrink: 0; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent; border: none; color: var(--text-secondary);
+  font-size: 14px; font-weight: 800; font-family: inherit; cursor: pointer;
+  transition: background .15s, color .15s, width .3s ease, height .3s ease;
+}
+.map-nav-btn:hover { background: var(--accent-14); color: var(--accent); }
+.map-nav-compass-needle { display: flex; transition: transform .2s ease; }
+
+#main.tab-timeseries .map-nav-ctrl { gap: 0; }
+#main.tab-timeseries .map-nav-row { flex-direction: column; border-radius: 0; }
+#main.tab-timeseries .map-nav-row:first-child { border-radius: 10px 10px 0 0; border-bottom: none; }
+#main.tab-timeseries .map-nav-row:last-child { border-radius: 0 0 10px 10px; border-top: none; }
+#main.tab-timeseries .map-nav-btn { width: 28px; height: 28px; }
+
+#tour-hole {
+  position: fixed; z-index: 9998; border-radius: 10px; pointer-events: none; display: none;
+  box-shadow: 0 0 0 9999px var(--tour-hole-dim), 0 0 0 2px var(--accent-60), 0 0 18px var(--accent-45);
+  transition: top .25s ease, left .25s ease, width .25s ease, height .25s ease;
+}
+#tour-box {
+  position: fixed; z-index: 9999; width: 290px; display: none;
+  background: var(--tour-box-bg); border: 1px solid var(--tour-box-border); border-radius: 12px;
+  box-shadow: 0 12px 40px var(--shadow-65); padding: 14px 16px 12px;
+}
+#tour-box .t-step { font-size: 10px; font-weight: 700; color: #0e7490; letter-spacing: .08em; text-transform: uppercase; }
+#tour-box .t-title { font-size: 14px; font-weight: 700; color: var(--tour-title); margin: 5px 0 6px; }
+#tour-box .t-desc { font-size: 11.5px; line-height: 1.55; color: var(--tour-desc); }
+#tour-box .t-desc b { color: var(--tour-title); }
+#tour-box .t-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; }
+#tour-box .t-dots { font-size: 10px; color: var(--tour-dots); }
+#tour-box .t-btns { display: flex; gap: 6px; }
+#tour-box button {
+  font-family: inherit; font-size: 11px; font-weight: 600; border-radius: 7px;
+  padding: 6px 12px; cursor: pointer; border: 1px solid var(--tour-btn-border);
+  background: transparent; color: var(--tour-btn-text); transition: background .15s;
+}
+#tour-box button:hover:not(:disabled) { background: var(--tour-btn-hover); }
+#tour-box button:disabled { opacity: .35; cursor: default; }
+#tour-box button.t-primary { background: var(--accent); border-color: var(--accent); color: var(--tour-btn-primary-text); }
+#tour-box button.t-primary:hover { background: var(--accent-cyan-300); }
+#tour-box #tour-close { position: absolute; top: 7px; right: 9px; border: none; background: none; color: var(--tour-desc); font-size: 15px; padding: 2px 4px; line-height: 1; }
+
+.maplibregl-popup-content {
+  background: var(--bg-popup) !important; border: 1px solid var(--border-default) !important;
+  border-radius: 10px !important; padding: 0 !important; min-width: 290px;
+  box-shadow: 0 8px 32px var(--shadow-60) !important;
+}
+.maplibregl-popup-close-button { color: var(--tour-desc) !important; right: 8px !important; top: 6px !important; font-size: 16px !important; }
+.maplibregl-popup-tip { border-top-color: var(--bg-popup) !important; }
+.pop-head { padding: 10px 14px 8px; border-bottom: 1px solid var(--border-faint-3); }
+.pop-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-top: 4px; }
+.pop-body { padding: 8px 14px 12px; }
+.pop-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; font-size: 11px; padding: 3px 0; border-bottom: 1px solid var(--border-faint); }
+.pop-row:last-child { border-bottom: none; }
+.pop-k { color: var(--text-strong); font-weight: 700; flex-shrink: 0; }
+.pop-v { color: var(--text-body); font-weight: 700; text-align: right; }
+
+.tb-section { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-subtle); }
+.tb-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.tb-title { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
+.tb-info-icon { display: inline-flex; align-items: center; justify-content: center; width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--text-strong); color: var(--text-strong); font-size: 9px; font-weight: 700; cursor: help; }
+.tb-desc { font-size: 10px; color: var(--text-strong); line-height: 1.5; margin: 2px 0 8px 0; }
+.tb-toggle { display: flex; gap: 0; background: var(--bg-inset-soft); border: 1px solid var(--border-subtle-2); border-radius: 8px; padding: 3px; }
+.tb-toggle input[type='radio'] { display: none; }
+.tb-toggle-btn { flex: 1; padding: 6px 10px; text-align: center; font-size: 10.5px; font-weight: 600; color: var(--text-strong); cursor: pointer; border-radius: 5px; transition: background .15s, color .15s; user-select: none; }
+.tb-toggle input[type='radio']:checked + .tb-toggle-btn { background: var(--accent-14); color: var(--accent); box-shadow: 0 0 0 1px var(--accent-28) inset; }
+.tb-banner { display: flex; align-items: flex-start; gap: 6px; margin-top: 8px; padding: 8px 10px; background: var(--bg-inset-faint); border: 1px solid var(--border-faint-3); border-radius: 6px; }
+.tb-banner svg { flex-shrink: 0; width: 12px; height: 12px; color: var(--text-strong); margin-top: 1px; }
+.tb-banner-text { display: flex; flex-direction: column; gap: 2px; font-size: 10px; color: var(--text-strong); line-height: 1.5; }
+.tb-banner-title { font-size: 10px; font-weight: 700; color: var(--text-body); letter-spacing: .01em; }
+
+.map-tools-ctrl { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.bm-ctrl { display: flex; align-items: center; gap: 6px; background: var(--bg-inset-blur); border: 1px solid var(--border-default); border-radius: 22px; padding: 4px 6px; backdrop-filter: blur(6px); pointer-events: auto; }
+
+.bm-swatches { display: flex; align-items: center; }
+.bm-swatch {
+  width: 0; height: 26px; border-radius: 50%; padding: 0; box-sizing: border-box; flex-shrink: 0;
+  border: 2px solid var(--border-white-half); background-color: rgba(255, 255, 255, .06);
+  background-size: cover; background-position: center; cursor: pointer;
+  opacity: 0; transform: scale(.3); margin-right: 0; overflow: hidden;
+  transition: width .32s cubic-bezier(.34, 1.56, .64, 1), transform .32s cubic-bezier(.34, 1.56, .64, 1),
+    opacity .22s ease, margin-right .32s ease, border-color .15s, box-shadow .15s;
+}
+.bm-swatch:hover { border-color: var(--text-strong); }
+.bm-swatch.bm-active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-35); }
+.bm-ctrl.bm-open .bm-swatch { width: 26px; opacity: 1; transform: scale(1); margin-right: 8px; }
+.bm-ctrl.bm-open .bm-swatch:nth-child(1) { transition-delay: .02s; }
+.bm-ctrl.bm-open .bm-swatch:nth-child(2) { transition-delay: .08s; }
+.bm-ctrl.bm-open .bm-swatch:nth-child(3) { transition-delay: .14s; }
+
+.bm-toggle { border: 1px solid var(--border-strong); background: rgba(255, 255, 255, .04); color: var(--text-secondary); font-size: 10px; font-weight: 700; letter-spacing: .04em; padding: 6px 12px; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: all .15s; }
+.bm-toggle:hover { background: rgba(255, 255, 255, .1); color: var(--text-strong); }
+.bm-ctrl.bm-open .bm-toggle { background: var(--status-purple); border-color: var(--status-purple); color: var(--text-strong); }
+
+#stat-chip {
+  position: absolute; bottom: 32px; right: 48px;
+  background: var(--bg-surface); border: 1px solid var(--border-subtle-2);
+  border-radius: 8px; padding: 5px 12px; font-size: 11px; color: var(--text-faint); z-index: 10; pointer-events: none;
+}
+
+#hover-tooltip {
+  position: absolute; pointer-events: none; z-index: 20;
+  background: var(--bg-inset); border: 1px solid var(--border-default);
+  border-radius: 8px; padding: 8px 12px; font-size: 11px; color: var(--text-body);
+  display: none; white-space: nowrap; box-shadow: 0 4px 16px var(--shadow-50);
+}
+#hover-tooltip .tt-row { display: flex; gap: 8px; justify-content: space-between; padding: 2px 0; }
+#hover-tooltip .tt-key { color: var(--text-strong); }
+#hover-tooltip .tt-val { font-weight: 600; }
+
+#search-bar { display: flex; gap: 0; width: 100%; height: 32px; }
+#search-mode {
+  flex-shrink: 0; width: 92px;
+  background-color: var(--bg-inset); border: 1px solid var(--accent-40);
+  border-radius: 7px 0 0 7px; color: var(--accent);
+  font-size: 10.5px; font-weight: 600; font-family: inherit; line-height: 1;
+  padding: 0 22px 0 10px; outline: none; cursor: pointer;
+  appearance: none;
+  /* appearance:none drops the native arrow — draw our own so it still reads as a dropdown. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2322d3ee' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  background-size: 11px 11px;
+  transition: background-color .15s, color .15s;
+}
+#search-mode:hover { background-color: var(--bg-hover-opaque); }
+#search-mode option { background: var(--bg-option); color: var(--text-body); }
+#search-input {
+  flex: 1; min-width: 0; background: var(--bg-inset); border: 1px solid var(--accent-40);
+  border-left: none; border-right: none; border-radius: 0; color: var(--text-body);
+  font-size: 10.5px; padding: 6px 10px; outline: none;
+}
+#search-input::placeholder { color: var(--text-faint); }
+#search-btn {
+  background: var(--bg-inset); border: 1px solid var(--accent-60);
+  border-left: none; border-radius: 0 7px 7px 0; color: var(--accent);
+  font-size: 10.5px; font-weight: 600; padding: 6px 12px; cursor: pointer;
+  transition: background .15s, color .15s; white-space: nowrap;
+}
+#search-btn:hover { background: var(--bg-hover-opaque); }
+#search-btn:disabled { opacity: .5; cursor: default; }
+#search-results {
+  position: absolute; top: 100%; left: 0; right: 0; margin-top: 6px;
+  background: var(--bg-surface-max); border: 1px solid var(--accent-25);
+  border-radius: 8px; overflow-y: auto; overflow-x: hidden;
+  max-height: 300px; box-shadow: 0 12px 28px var(--shadow-65); z-index: 40;
+}
+.sr-item { padding: 8px 12px; font-size: 11px; color: var(--text-secondary); cursor: pointer; border-bottom: 1px solid var(--border-faint-2); transition: background .1s; }
+.sr-item:last-child { border-bottom: none; }
+.sr-item:hover, .sr-item.sr-active { background: rgba(255, 255, 255, 0.06); }
+.sr-item.sr-active { border-left: 2px solid var(--accent); }
+.sr-item .sr-name { font-weight: 600; color: var(--text-body); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sr-item .sr-detail { color: var(--text-muted); font-size: 10px; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; }
+.sr-empty { padding: 10px 12px; font-size: 11px; color: var(--text-faint); text-align: center; }
+.sr-item .sr-badge { float: right; margin-left: 8px; font-size: 9px; padding: 1px 6px; border-radius: 999px; background: var(--accent-14); color: var(--accent-cyan-300); font-weight: 600; }
+
+/* Floating RT/RW realisasi bar chart panel — stretches to fill the space between the
+   sidebar (left, already excluded since this sits inside #main) and the filter icon
+   strip / map tools column (right), instead of a fixed width; the bar chart only
+   scrolls internally on the rare screen where even that isn't enough room.
+   .wilayah-chart-panel is just a positioning wrapper (needs overflow:visible so the RT/RW
+   tab can poke out above it) — .wilayah-chart-card carries the actual visible surface
+   (background/border/radius/shadow/overflow:hidden), so the tab isn't clipped. */
+@keyframes wilayahChartIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.wilayah-chart-panel {
+  position: absolute; left: 10px; right: 150px; bottom: 10px; z-index: 15;
+  animation: wilayahChartIn .22s ease forwards;
+}
+.wilayah-chart-card {
+  position: relative;
+  background: var(--bg-surface-strong); border: 1px solid var(--accent-35);
+  border-radius: 10px; box-shadow: 0 8px 28px var(--shadow-55);
+  overflow: hidden;
+}
+
+/* RT/RW tab — a normal, fully-bordered pill sitting just above the card with a small gap
+   (not merged into the card's own border), so it reads as its own standalone box. */
+.wilayah-chart-tab-float {
+  position: absolute; top: -38px; left: 14px; z-index: 1;
+  display: flex; gap: 0;
+  background: var(--bg-inset);
+  border: 1px solid var(--accent-40);
+  border-radius: 8px; padding: 3px;
+  box-shadow: 0 4px 14px var(--shadow-40);
+}
+.wilayah-chart-tab {
+  border: none; background: transparent; cursor: pointer;
+  min-width: 56px; padding: 6px 20px; font-size: 11px; font-weight: 700; color: var(--text-muted);
+  border-radius: 5px; letter-spacing: .02em; transition: background .15s, color .15s;
+}
+.wilayah-chart-tab.active { background: var(--accent-14); color: var(--accent); box-shadow: 0 0 0 1px var(--accent-32) inset; }
+
+.wilayah-chart-toggle {
+  position: absolute; top: 8px; right: 8px; z-index: 1;
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg-inset-soft); border: 1px solid var(--border-subtle-2);
+  color: var(--text-muted); cursor: pointer; transition: background .15s, color .15s;
+}
+.wilayah-chart-toggle:hover { background: var(--accent-10); color: var(--text-body); }
+
+/* Drag this up to grow .wilayah-chart-scroll's height — chartHeight state's floor is the
+   panel's original 150px, so this only ever makes the chart taller, never smaller. */
+.wilayah-chart-resize-handle {
+  height: 9px; display: flex; align-items: center; justify-content: center;
+  cursor: ns-resize; touch-action: none;
+}
+.wilayah-chart-resize-handle span {
+  width: 34px; height: 3px; border-radius: 2px;
+  background: var(--border-strong); transition: background .15s;
+}
+.wilayah-chart-resize-handle:hover span { background: var(--accent-55); }
+
+/* This chart's own Tahun Pajak Awal/Akhir range — topmost content row, deliberately not the
+   same control as the main Filter Waktu icon (see useWilayahRealisasi). */
+.wilayah-chart-yearrange { display: flex; align-items: center; gap: 8px; padding: 10px 90px 8px 14px; }
+.wilayah-chart-yearrange-label { font-size: 10px; font-weight: 700; color: var(--text-strong); text-transform: uppercase; letter-spacing: .06em; }
+.wilayah-chart-yearrange-sep { font-size: 10px; color: var(--text-faint); }
+.wilayah-chart-yearrange select {
+  background: var(--bg-inset-soft); border: 1px solid var(--border-default);
+  border-radius: 6px; padding: 4px 8px; color: var(--text-body); font-size: 11px;
+  font-family: inherit; outline: none; cursor: pointer; transition: border-color .15s;
+}
+.wilayah-chart-yearrange select:focus { border-color: var(--accent-40); }
+
+/* Vertically centered on the card's right edge; .wilayah-chart-scroll reserves matching
+   right padding below so bars never render underneath it. */
+.wilayah-chart-legend-vertical {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%); z-index: 1;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.wilayah-chart-legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+.wilayah-chart-swatch { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+.wilayah-chart-scroll { overflow-x: auto; overflow-y: hidden; padding: 4px 74px 12px 10px; }
+.wilayah-chart-scroll::-webkit-scrollbar { height: 4px; }
+.wilayah-chart-scroll::-webkit-scrollbar-track { background: transparent; }
+.wilayah-chart-scroll::-webkit-scrollbar-thumb { background: var(--border-default-2); border-radius: 2px; }
+.wilayah-chart-loading { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); font-size: 11px; }
+.sr-item .sr-badge.sr-badge-luar { background: rgba(148, 163, 184, 0.16); color: var(--text-secondary); }
+
+/* ── Light theme ──────────────────────────────────────────────────────────────────────────
+   .light is applied to <html> (see useTheme.ts), not to .dashboard-root itself — hence the
+   descendant selector (.light .dashboard-root), not a compound one. Redefines the same
+   variables declared at the top of this file with light-appropriate values (light gray/white
+   surfaces, near-black text) — every rule above already reads from these variables, so this
+   block is the only place light mode needs to be taught anything. Accent (cyan) and status
+   colors (green/orange/purple) intentionally stay the same in both themes. */
+.light .dashboard-root {
+  --bg-page: #e7ebf0;
+  --bg-surface: #f2f4f7;
+  --bg-surface-strong: #eef1f5;
+  --bg-surface-max: #eaeef3;
+  --bg-inset: #dde3ea;
+  --bg-inset-heavy: #eef1f5;
+  --bg-inset-soft: #e3e8ee;
+  --bg-inset-faint: #eef1f5;
+  --bg-inset-blur: rgba(238, 241, 245, .85);
+  --bg-box: #e9edf2;
+  --bg-popup: #f2f4f7;
+  --bg-hover-opaque: #bceef5;
+  --bg-option: #f2f4f7;
+
+  --text-strong: #0f172a;
+  --text-body: #1e293b;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+  --text-disabled: #cbd5e1;
+  --text-disabled-2: #e2e8f0;
+  --text-on-accent: #04121f;
+
+  --border-faint: rgba(15, 23, 42, 0.08);
+  --border-faint-2: rgba(15, 23, 42, 0.1);
+  --border-faint-3: rgba(15, 23, 42, 0.12);
+  --border-subtle: rgba(15, 23, 42, 0.14);
+  --border-subtle-2: rgba(15, 23, 42, 0.16);
+  --border-subtle-3: rgba(15, 23, 42, 0.18);
+  --border-default: rgba(15, 23, 42, 0.2);
+  --border-default-2: rgba(15, 23, 42, 0.24);
+  --border-strong: rgba(15, 23, 42, 0.32);
+  --border-white-half: rgba(15, 23, 42, .3);
+
+  --shadow-40: rgba(15, 23, 42, .1);
+  --shadow-45: rgba(15, 23, 42, .12);
+  --shadow-50: rgba(15, 23, 42, .14);
+  --shadow-55: rgba(15, 23, 42, .16);
+  --shadow-60: rgba(15, 23, 42, .18);
+  --shadow-65: rgba(15, 23, 42, .22);
+
+  --tour-box-bg: #ffffff;
+  --tour-box-border: rgba(34, 211, 238, .45);
+  --tour-title: #0f172a;
+  --tour-desc: #475569;
+  --tour-dots: #94a3b8;
+  --tour-btn-text: #334155;
+  --tour-btn-border: rgba(15, 23, 42, .15);
+  --tour-btn-hover: rgba(15, 23, 42, .06);
+  --tour-btn-primary-text: #06121e;
+  --tour-hole-dim: rgba(241, 245, 249, .85);
+}
+.light .dashboard-root #sidebar { border-right-color: var(--border-faint-3); }
+.light .dashboard-root .bm-swatch { background-color: rgba(15, 23, 42, .06); }
+.light .dashboard-root .bm-toggle { background: rgba(15, 23, 42, .04); }
+.light .dashboard-root .bm-toggle:hover { background: rgba(15, 23, 42, .08); color: var(--text-strong); }
+.light .dashboard-root .sr-item:hover, .light .dashboard-root .sr-item.sr-active { background: rgba(15, 23, 42, 0.05); }

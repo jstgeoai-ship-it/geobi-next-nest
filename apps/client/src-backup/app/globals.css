@@ -1,0 +1,39 @@
+@import "tailwindcss";
+@import "maplibre-gl/dist/maplibre-gl.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+/* App is dark-by-default everywhere (unprefixed classes) — light mode is the opt-in override,
+   toggled via .light on <html> (see useTheme.ts), so light: sits alongside existing classes
+   instead of requiring every dark-styled component to be rewritten as dark: variants. */
+@custom-variant light (&:where(.light, .light *));
+
+/* Tentang/Struktur pages are hand-styled with inline style={{}} objects rather than Tailwind
+   classes, so light: can't reach them — these variables are what their neutral (background/
+   text/border) inline colors reference instead. Saturated per-item accents (orange/cyan/
+   green/purple) stay hardcoded since they read fine on both a dark and light page background. */
+:root {
+  --pub-bg: #0f172a;
+  --pub-text: #e2e8f0;
+  --pub-muted: #94a3b8;
+  --pub-muted-2: #64748b;
+  --pub-muted-3: #475569;
+  --pub-card: rgba(15, 23, 42, 0.6);
+  --pub-border: rgba(255, 255, 255, 0.07);
+  --pub-border-2: rgba(255, 255, 255, 0.1);
+  --pub-primary: #3b82f6;
+  --pub-secondary: #60a5fa;
+  --pub-accent: #93c5fd;
+}
+:root.light {
+  --pub-bg: #f5f9ff;
+  --pub-text: #1e293b;
+  --pub-muted: #64748b;
+  --pub-muted-2: #475569;
+  --pub-muted-3: #334155;
+  --pub-card: rgba(255, 255, 255, 0.7);
+  --pub-border: rgba(15, 23, 42, 0.08);
+  --pub-border-2: rgba(15, 23, 42, 0.12);
+  --pub-primary: #1e3a8a;
+  --pub-secondary: #3b82f6;
+  --pub-accent: #60a5fa;
+}

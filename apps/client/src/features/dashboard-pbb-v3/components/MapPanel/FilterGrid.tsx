@@ -113,7 +113,7 @@ export function FilterGrid({ waktuPanelVariant, sidebarTab }: { waktuPanelVarian
     <div id="panel-float" ref={rootRef}>
       <div className="panel-grid">
         {BUTTONS.map((b) => (
-          <div key={b.id} className={`panel-btn-wrap${isVisibleForTab(b.id) ? '' : ' panel-btn-hidden'}`}>
+          <div key={b.id} className={`panel-btn-wrap${isVisibleForTab(b.id) ? '' : ' panel-btn-hidden'}${openPanel === b.id ? ' panel-btn-open' : ''}`}>
             <button
               id={b.btnId}
               className={`panel-icon-btn${openPanel === b.id ? ' active' : ''}`}
@@ -123,7 +123,7 @@ export function FilterGrid({ waktuPanelVariant, sidebarTab }: { waktuPanelVarian
               tabIndex={isVisibleForTab(b.id) ? 0 : -1}
               onClick={() => togglePanel(b.id)}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: b.icon }} />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" dangerouslySetInnerHTML={{ __html: b.icon }} />
             </button>
             {openPanel === b.id && <div className="float-panel-dropdown">{renderPanelContent(b.id)}</div>}
           </div>
