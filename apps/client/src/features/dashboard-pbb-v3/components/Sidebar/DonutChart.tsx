@@ -4,8 +4,10 @@ import { useMemo } from 'react';
 import { Doughnut } from 'react-chartjs-2';
 import type { PbbAggregateRow } from '@geobi/shared';
 import { rupiahM } from '../../lib/format';
+import { useTheme } from '@/lib/useTheme';
 
 export function DonutChart({ stats }: { stats?: PbbAggregateRow }) {
+  const { theme } = useTheme();
   const sudah = stats?.sudah_bayar ?? 0;
   const belum = stats?.belum_bayar ?? 0;
   const nol = stats?.pbb_nol ?? 0;
@@ -15,6 +17,11 @@ export function DonutChart({ stats }: { stats?: PbbAggregateRow }) {
   const belumRp = Number(stats?.belum_rp ?? 0);
   const batalRp = Number(stats?.batal_rp ?? 0);
 
+  // Chart.js renders to <canvas>, jadi gak bisa baca CSS var(--bg-surface) langsung — warna
+  // "celah" antar slice ini perlu senada dengan background sidebar di tema aktif, biar
+  // nyatu bukannya kelihatan ada garis gelap nyeruduk pas light mode.
+  const segmentGap = theme === 'light' ? '#f2f4f7' : '#0a0f1e';
+
   const data = useMemo(
     () => ({
       labels: ['Sudah Bayar', 'Belum Bayar', 'PBB 0 Rupiah', 'Di Batalkan'],
@@ -22,13 +29,13 @@ export function DonutChart({ stats }: { stats?: PbbAggregateRow }) {
         {
           data: [sudah, belum, nol, batal],
           backgroundColor: ['#22c55e', '#ef4444', '#f59e0b', '#3b82f6'],
-          borderColor: '#0a0f1e',
+          borderColor: segmentGap,
           borderWidth: 3,
           hoverOffset: 6,
         },
       ],
     }),
-    [sudah, belum, nol, batal],
+    [sudah, belum, nol, batal, segmentGap],
   );
 
   const options = useMemo(

@@ -1,6 +1,7 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { ACCESS_COOKIE, NEST_API_URL, REFRESH_COOKIE } from '@/lib/cookies';
+import { ACCESS_COOKIE, REFRESH_COOKIE } from '@/lib/cookies';
+import { postNest } from '@/lib/nestFetch';
 
 export async function POST() {
   const cookieStore = await cookies();
@@ -9,18 +10,12 @@ export async function POST() {
     return NextResponse.json({ message: 'No refresh token' }, { status: 401 });
   }
 
-  const nestRes = await fetch(`${NEST_API_URL}/auth/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refreshToken }),
-    cache: 'no-store',
-  });
+  const { ok, status, data } = await postNest('/auth/refresh', { refreshToken });
 
-  const data = await nestRes.json();
-  if (!nestRes.ok) {
+  if (!ok) {
     cookieStore.delete(ACCESS_COOKIE);
     cookieStore.delete(REFRESH_COOKIE);
-    return NextResponse.json(data, { status: nestRes.status });
+    return NextResponse.json(data, { status });
   }
 
   const secure = process.env.NODE_ENV === 'production';

@@ -1,0 +1,14 @@
+{
+  "files.exclude": {
+    "**/src-backup": true
+  },
+  "search.exclude": {
+    "**/src-backup": true
+  },
+  "files.watcherExclude": {
+    "**/src-backup/**": true
+  },
+  "typescript.tsserver.watchOptions": {
+    "excludeDirectories": ["**/src-backup", "**/node_modules", "**/.next"]
+  }
+}

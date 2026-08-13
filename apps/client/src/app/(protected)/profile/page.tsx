@@ -7,11 +7,11 @@ import { useAuthUser } from '@/lib/useAuthUser';
 import { Navbar } from '@/components/Navbar';
 
 const inputClass =
-  'mt-1 block w-full rounded-md bg-slate-800 light:bg-slate-50 border border-white/10 light:border-gray-300 text-white light:text-gray-900 placeholder-slate-500 px-3 py-2 text-sm outline-none focus:border-cyan-400 transition-colors';
-const labelClass = 'block text-sm font-medium text-slate-300 light:text-gray-700';
-const headingClass = 'text-lg font-medium text-white light:text-gray-900';
-const descClass = 'mt-1 text-sm text-slate-400 light:text-gray-600';
-const savedClass = 'text-sm text-slate-400 light:text-gray-500';
+  'mt-1 block w-full rounded-md bg-slate-800 light:bg-slate-50 border border-white/10 light:border-gray-300 text-[var(--pub-text)] light:text-[var(--pub-text)] placeholder-[var(--pub-muted)] px-3 py-2 text-sm outline-none focus:border-cyan-400 transition-colors';
+const labelClass = 'block text-sm font-medium text-[var(--pub-muted)] light:text-[var(--pub-muted-3)]';
+const headingClass = 'text-lg font-medium text-[var(--pub-text)] light:text-[var(--pub-text)]';
+const descClass = 'mt-1 text-sm text-[var(--pub-muted-2)] light:text-[var(--pub-muted-3)]';
+const savedClass = 'text-sm text-[var(--pub-muted-2)] light:text-[var(--pub-muted-2)]';
 
 function Card({ children }: { children: React.ReactNode }) {
   return (
@@ -73,7 +73,7 @@ function ProfileInformationForm() {
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
         <div className="flex items-center gap-4">
-          <button type="submit" className="bg-orange-500 hover:bg-orange-600 transition-colors text-white px-4 py-2 rounded-md text-sm font-semibold">Save</button>
+          <button type="submit" className="bg-orange-500 hover:bg-orange-600 transition-colors text-[var(--pub-text)] px-4 py-2 rounded-md text-sm font-semibold">Save</button>
           {saved && <p className={savedClass}>Saved.</p>}
         </div>
       </form>
@@ -135,7 +135,7 @@ function UpdatePasswordForm() {
         </div>
         {error && <p className="text-sm text-red-400">{error}</p>}
         <div className="flex items-center gap-4">
-          <button type="submit" className="bg-orange-500 hover:bg-orange-600 transition-colors text-white px-4 py-2 rounded-md text-sm font-semibold">Save</button>
+          <button type="submit" className="bg-orange-500 hover:bg-orange-600 transition-colors text-[var(--pub-text)] px-4 py-2 rounded-md text-sm font-semibold">Save</button>
           {saved && <p className={savedClass}>Saved.</p>}
         </div>
       </form>
@@ -177,12 +177,12 @@ function DeleteUserForm() {
       </header>
 
       {!confirming ? (
-        <button onClick={() => setConfirming(true)} className="bg-red-600 hover:bg-red-700 transition-colors text-white px-4 py-2 rounded-md text-sm font-semibold">
+        <button onClick={() => setConfirming(true)} className="bg-red-600 hover:bg-red-700 transition-colors text-[var(--pub-text)] px-4 py-2 rounded-md text-sm font-semibold">
           Delete Account
         </button>
       ) : (
         <form onSubmit={handleDelete} className="border border-red-500/30 rounded-md p-4 space-y-4 bg-red-500/5">
-          <p className="text-sm text-slate-400 light:text-gray-600">
+          <p className="text-sm text-[var(--pub-muted-2)] light:text-[var(--pub-muted-3)]">
             Please enter your password to confirm you would like to permanently delete your account.
           </p>
           <input
@@ -194,10 +194,10 @@ function DeleteUserForm() {
           />
           {error && <p className="text-sm text-red-400">{error}</p>}
           <div className="flex justify-end gap-3">
-            <button type="button" onClick={() => { setConfirming(false); setPassword(''); setError(null); }} className="text-sm text-slate-400 light:text-gray-500 hover:text-white light:hover:text-gray-900 transition-colors">
+            <button type="button" onClick={() => { setConfirming(false); setPassword(''); setError(null); }} className="text-sm text-[var(--pub-muted-2)] light:text-[var(--pub-muted-2)] hover:text-[var(--pub-text)] light:hover:text-[var(--pub-text)] transition-colors">
               Cancel
             </button>
-            <button type="submit" className="bg-red-600 hover:bg-red-700 transition-colors text-white px-4 py-2 rounded-md text-sm font-semibold">
+            <button type="submit" className="bg-red-600 hover:bg-red-700 transition-colors text-[var(--pub-text)] px-4 py-2 rounded-md text-sm font-semibold">
               Delete Account
             </button>
           </div>

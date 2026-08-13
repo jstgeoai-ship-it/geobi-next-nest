@@ -30,7 +30,7 @@ export class TilesController {
       tile = cached.buf;
     } else {
       const result = await this.pool.query<{ tile: Buffer | null }>(
-        'SELECT data_tanah_map_tiles($1, $2, $3, $4) AS tile',
+        'SELECT data_tanah_map($1, $2, $3, $4) AS tile',
         [Number(z), Number(x), Number(y), tahun ? Number(tahun) : null],
       );
       tile = result.rows[0]?.tile ?? null;

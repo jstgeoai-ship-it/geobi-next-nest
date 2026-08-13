@@ -10,6 +10,7 @@ import { MapToolsControl } from '../lib/maplibre-controls/MapToolsControl';
 import { MapNavControl } from '../lib/maplibre-controls/MapNavControl';
 import { kelurahanPopupHTML, persilPopupHTML } from '../lib/popup-html';
 import { useFiltersStore } from '../store/filters.store';
+import { useTheme } from '@/lib/useTheme';
 
 const MARTIN = process.env.NEXT_PUBLIC_MARTIN_URL || 'http://localhost:3000';
 const TABLE = 'data_tanah_map';
@@ -19,7 +20,7 @@ const TABLE = 'data_tanah_map';
  *  server only ever serializes one tahun_pajak's worth of features per tile. */
 export function buildTanahTilesUrl(tahun: string) {
   const qs = tahun ? `?tahun=${encodeURIComponent(tahun)}` : '';
-  return `/api/tiles/data-tanah-map/{z}/{x}/{y}${qs}`;
+  return '/api/tiles/data-tanah-map/{z}/{x}/{y}' + qs;
 }
 
 interface Options {
@@ -43,6 +44,8 @@ export function useDashboardMap(
   const initialBoundsRef = useRef<[[number, number], [number, number]] | null>(null);
   const locMarkerRef = useRef<Marker | null>(null);
   const locReqRef = useRef(0);
+  const mapToolsControlRef = useRef<any>(null);
+  const { theme } = useTheme();
 
   const fitToDataBounds = useCallback(() => {
     const map = mapRef.current;
@@ -95,7 +98,7 @@ export function useDashboardMap(
 
     const map = new maplibregl.Map({
       container,
-      style: BASEMAP_STYLES.dark,
+      style: theme === 'light' ? BASEMAP_STYLES.positron : BASEMAP_STYLES.dark,
       center: [106.779, -6.276],
       zoom: 14,
       maxZoom: 24,
@@ -106,9 +109,11 @@ export function useDashboardMap(
     function addAppLayers() {
       if (map.getSource('tanah')) return;
       map.addSource('tanah', {
-        type: 'vector', promoteId: 'gid',
+        type: 'vector',
+        promoteId: 'gid',
         tiles: [`${MARTIN}/${TABLE}/{z}/{x}/{y}`],
-        minzoom: 0, maxzoom: 22,
+        minzoom: 0,
+        maxzoom: 22,
       });
       map.addLayer({ id: 'tanah-fill', type: 'fill', source: 'tanah', 'source-layer': TABLE, paint: { 'fill-color': COLOR_EXPR, 'fill-opacity': 0.35 } });
       map.addLayer({ id: 'tanah-line', type: 'line', source: 'tanah', 'source-layer': TABLE, paint: { 'line-color': COLOR_EXPR, 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 0.5, 15, 1.2, 18, 2] } });
@@ -124,12 +129,19 @@ export function useDashboardMap(
       map.addLayer({ id: 'kel-line-casing', type: 'line', source: 'kelurahan', 'source-layer': 'administrasi_ar_desakel', paint: { 'line-color': '#000', 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 3, 14, 5, 18, 6], 'line-opacity': 0.35, 'line-blur': 1 } });
       map.addLayer({ id: 'kel-line', type: 'line', source: 'kelurahan', 'source-layer': 'administrasi_ar_desakel', paint: { 'line-color': '#ffffff', 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 1.2, 14, 2, 18, 3], 'line-opacity': 0.85, 'line-dasharray': [5, 3] } });
       map.addLayer({
-        id: 'kel-label', type: 'symbol', source: 'kelurahan', 'source-layer': 'administrasi_ar_desakel', minzoom: 14,
+        id: 'kel-label',
+        type: 'symbol',
+        source: 'kelurahan',
+        'source-layer': 'administrasi_ar_desakel',
+        minzoom: 14,
         layout: {
           'text-field': ['get', 'namobj'],
           'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
           'text-size': ['interpolate', ['linear'], ['zoom'], 14, 10, 17, 13],
-          'text-anchor': 'center', 'text-max-width': 8, 'text-letter-spacing': 0.04, 'symbol-placement': 'point',
+          'text-anchor': 'center',
+          'text-max-width': 8,
+          'text-letter-spacing': 0.04,
+          'symbol-placement': 'point',
         },
         paint: { 'text-color': '#ffffff', 'text-halo-color': 'rgba(0,0,0,0.85)', 'text-halo-width': 1.5 },
       });
@@ -145,7 +157,8 @@ export function useDashboardMap(
     }
 
     if (opts.showBasemapSwitcher) {
-      const mapToolsControl = new MapToolsControl('dark', (key) => {
+      const basemapKey = theme === 'light' ? 'positron' : 'dark';
+      const mapToolsControl = new MapToolsControl(basemapKey, (key) => {
         map.setStyle(BASEMAP_STYLES[key]);
         map.once('styledata', () => {
           addAppLayers();
@@ -155,9 +168,11 @@ export function useDashboardMap(
         mapToolsControl.setActive(key);
       });
       map.addControl(mapToolsControl, 'bottom-right');
+      mapToolsControlRef.current = mapToolsControl;
     } else {
       map.addControl(new AttrControl(), 'bottom-right');
     }
+
     map.addControl(
       new MapNavControl({
         showTour: opts.showTour,
@@ -330,6 +345,20 @@ export function useDashboardMap(
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Respond to theme changes without remounting the map.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const basemapKey = theme === 'light' ? 'positron' : 'dark';
+    const target = BASEMAP_STYLES[basemapKey];
+    // Update map style
+    map.setStyle(target);
+    // Update the basemap switcher toggle state if it exists
+    if (mapToolsControlRef.current) {
+      mapToolsControlRef.current.setActive(basemapKey);
+    }
+  }, [theme]);
 
   return { mapRef, mapLoaded, flyToResult, fitToDataBounds, flyToBounds };
 }

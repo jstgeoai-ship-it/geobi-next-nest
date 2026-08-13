@@ -4,7 +4,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
       <div>
-        <Link href="/" className="text-xl font-semibold text-gray-700">
+        <Link href="/" className="text-xl font-semibold text-[var(--pub-muted-3)]">
           GeoBI
         </Link>
       </div>

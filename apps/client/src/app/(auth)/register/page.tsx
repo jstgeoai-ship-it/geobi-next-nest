@@ -46,7 +46,7 @@ export default function RegisterPage() {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Name</label>
+        <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Name</label>
         <input
           type="text"
           value={name}
@@ -58,7 +58,7 @@ export default function RegisterPage() {
       </div>
 
       <div className="mt-4">
-        <label className="block text-sm font-medium text-gray-700">Email</label>
+        <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Email</label>
         <input
           type="email"
           value={email}
@@ -69,7 +69,7 @@ export default function RegisterPage() {
       </div>
 
       <div className="mt-4">
-        <label className="block text-sm font-medium text-gray-700">Password</label>
+        <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Password</label>
         <input
           type="password"
           value={password}
@@ -81,7 +81,7 @@ export default function RegisterPage() {
       </div>
 
       <div className="mt-4">
-        <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
+        <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Confirm Password</label>
         <input
           type="password"
           value={passwordConfirmation}
@@ -95,13 +95,13 @@ export default function RegisterPage() {
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
       <div className="flex items-center justify-end mt-4">
-        <Link href="/login" className="underline text-sm text-gray-600 hover:text-gray-900">
+        <Link href="/login" className="underline text-sm text-[var(--pub-muted-3)] hover:text-[var(--pub-text)]">
           Already registered?
         </Link>
         <button
           type="submit"
           disabled={loading}
-          className="ms-4 bg-gray-800 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="ms-4 bg-gray-800 text-[var(--pub-text)] px-4 py-2 rounded disabled:opacity-50"
         >
           {loading ? 'Registering…' : 'Register'}
         </button>

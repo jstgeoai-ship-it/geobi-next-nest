@@ -4,66 +4,30 @@ import { useEffect, useRef, useState } from 'react';
 import { Navbar } from '@/components/Navbar';
 import './pbb-p2.css';
 import { usePbbP2Map } from './hooks/usePbbP2Map';
-
-interface NominatimResult {
-  display_name: string;
-  lat: string;
-  lon: string;
-}
+import { SearchBar } from './components/SearchBar';
+import { useTheme } from '@/lib/useTheme';
 
 export function PetaPbbP2() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const statChipRef = useRef<HTMLDivElement>(null);
-  const searchBarRef = useRef<HTMLDivElement>(null);
 
   const { flyToResult, setBasemap, setLayerVisible } = usePbbP2Map(mapContainerRef, tooltipRef, statChipRef);
+  const { theme } = useTheme();
 
   const [panelOpen, setPanelOpen] = useState(true);
-  const [basemap, setBasemapState] = useState<'dark' | 'osm' | 'satellite'>('dark');
+  const [basemap, setBasemapState] = useState<'dark' | 'osm' | 'satellite' | 'positron'>('dark');
+
+  // Keep the picker's active highlight in sync with the automatic dark/light -> basemap switch
+  // that usePbbP2Map applies whenever the theme changes (light -> OSM, dark -> Dark).
+  useEffect(() => {
+    setBasemapState(theme === 'light' ? 'osm' : 'dark');
+  }, [theme]);
   const [showBidang, setShowBidang] = useState(true);
   const [showKecamatan, setShowKecamatan] = useState(true);
   const [showKelurahan, setShowKelurahan] = useState(true);
 
-  const [query, setQuery] = useState('');
-  const [results, setResults] = useState<NominatimResult[] | null>(null);
-  const [searching, setSearching] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-
-  useEffect(() => {
-    function onDocClick(e: MouseEvent) {
-      if (searchBarRef.current && !searchBarRef.current.contains(e.target as Node)) setShowResults(false);
-    }
-    document.addEventListener('click', onDocClick);
-    return () => document.removeEventListener('click', onDocClick);
-  }, []);
-
-  async function doSearch() {
-    const q = query.trim();
-    if (!q) return;
-    setSearching(true);
-    setShowResults(false);
-    try {
-      const url = `https://nominatim.openstreetmap.org/search?format=json&limit=5&countrycodes=id&viewbox=106.68,-6.38,107.00,-6.10&bounded=0&q=${encodeURIComponent(q)}`;
-      const res = await fetch(url, { headers: { 'Accept-Language': 'id' } });
-      const data: NominatimResult[] = await res.json();
-      setResults(data);
-      setShowResults(true);
-    } catch {
-      setResults(null);
-      setShowResults(true);
-    } finally {
-      setSearching(false);
-    }
-  }
-
-  function pickResult(item: NominatimResult) {
-    flyToResult(parseFloat(item.lon), parseFloat(item.lat));
-    setQuery(item.display_name.split(',')[0].trim());
-    setShowResults(false);
-  }
-
-  function changeBasemap(key: 'dark' | 'osm' | 'satellite') {
+  function changeBasemap(key: 'dark' | 'osm' | 'satellite' | 'positron') {
     setBasemapState(key);
     setBasemap(key);
   }
@@ -118,41 +82,12 @@ export function PetaPbbP2() {
             <button type="button" className={`bm-btn${basemap === 'dark' ? ' active' : ''}`} onClick={() => changeBasemap('dark')}>Dark</button>
             <button type="button" className={`bm-btn${basemap === 'osm' ? ' active' : ''}`} onClick={() => changeBasemap('osm')}>OSM</button>
             <button type="button" className={`bm-btn${basemap === 'satellite' ? ' active' : ''}`} onClick={() => changeBasemap('satellite')}>Satelit</button>
+            <button type="button" className={`bm-btn${basemap === 'positron' ? ' active' : ''}`} onClick={() => changeBasemap('positron')}>Positron</button>
           </div>
         </div>
       </aside>
 
-      <div id="search-bar" ref={searchBarRef}>
-        <input
-          id="search-input"
-          type="text"
-          placeholder=""
-          autoComplete="off"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => { if (e.key === 'Enter') doSearch(); }}
-        />
-        <button id="search-btn" type="button" disabled={searching} onClick={doSearch}>{searching ? '…' : 'Cari'}</button>
-        {showResults && (
-          <div id="search-results" style={{ display: 'block' }}>
-            {!results || results.length === 0 ? (
-              <div className="sr-empty">{results === null ? 'Gagal menghubungi layanan pencarian' : 'Alamat tidak ditemukan'}</div>
-            ) : (
-              results.map((item, i) => {
-                const parts = item.display_name.split(',');
-                const name = parts[0].trim();
-                const detail = parts.slice(1, 4).join(',').trim();
-                return (
-                  <div key={i} className="sr-item" onClick={() => pickResult(item)}>
-                    <div className="sr-name">{name}</div>
-                    <div className="sr-detail">{detail}</div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        )}
-      </div>
+      <SearchBar onSelect={(lng, lat, row) => flyToResult(lng, lat, row as unknown as Record<string, unknown> | undefined)} />
 
       <div id="hover-tooltip" ref={tooltipRef}>
         <div className="tt-row"><span className="tt-key">ID Objek Pajak</span><span className="tt-val" id="tt-id">—</span></div>

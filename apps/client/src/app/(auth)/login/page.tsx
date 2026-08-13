@@ -47,7 +47,7 @@ function LoginForm() {
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <label className="block text-sm font-medium text-gray-700">Email</label>
+        <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Email</label>
         <input
           type="email"
           value={email}
@@ -58,7 +58,7 @@ function LoginForm() {
       </div>
 
       <div className="mt-4">
-        <label className="block text-sm font-medium text-gray-700">Password</label>
+        <label className="block text-sm font-medium text-[var(--pub-muted-3)]">Password</label>
         <input
           type="password"
           value={password}
@@ -71,19 +71,19 @@ function LoginForm() {
       {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
 
       <div className="mt-6 flex items-center justify-between">
-        <Link href="/forgot-password" className="text-sm text-gray-600 underline">
+        <Link href="/forgot-password" className="text-sm text-[var(--pub-muted-3)] underline">
           Forgot your password?
         </Link>
         <button
           type="submit"
           disabled={loading}
-          className="bg-orange-500 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="bg-orange-500 text-[var(--pub-text)] px-4 py-2 rounded disabled:opacity-50"
         >
           {loading ? 'Logging in…' : 'Login'}
         </button>
       </div>
 
-      <p className="mt-4 text-sm text-gray-600">
+      <p className="mt-4 text-sm text-[var(--pub-muted-3)]">
         Don&apos;t have an account?{' '}
         <Link href="/register" className="underline">
           Register

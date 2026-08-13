@@ -14,7 +14,7 @@ export function persilPopupHTML(p: Record<string, any>): string {
 
   return `
     <div class="pop-head">
-      <div style="font-size:10px;color:#ffffff;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Detail Persil</div>
+      <div style="font-size:10px;color:var(--text-strong);font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Detail Persil</div>
       <div style="font-size:13px;color:#22d3ee;font-weight:700;margin-top:4px;line-height:1.25;">${teks(p.nama_wajib_pajak)}</div>
       <span class="pop-badge" style="${bc}">${p.status_pem ?? '—'}</span>
     </div>
@@ -46,7 +46,7 @@ export function kelurahanPopupHTML(p: Record<string, any>): string {
   const luas = p.luas != null ? parseFloat(p.luas).toLocaleString('id-ID', { maximumFractionDigits: 2 }) + ' km²' : '—';
   return `
     <div class="pop-head">
-      <div style="font-size:10px;color:#ffffff;font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Kelurahan</div>
+      <div style="font-size:10px;color:var(--text-strong);font-weight:700;text-transform:uppercase;letter-spacing:.06em;">Kelurahan</div>
       <span class="pop-badge" style="background:rgba(255,255,255,.1);color:#e2e8f0;border:1px solid rgba(255,255,255,.2);">${p.namobj ?? '—'}</span>
     </div>
     <div class="pop-body">

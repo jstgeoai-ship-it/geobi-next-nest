@@ -1,20 +1,14 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
-import { ACCESS_COOKIE, NEST_API_URL, REFRESH_COOKIE } from '@/lib/cookies';
+import { ACCESS_COOKIE, REFRESH_COOKIE } from '@/lib/cookies';
+import { postNest } from '@/lib/nestFetch';
 
 export async function POST(request: Request) {
   const body = await request.json();
+  const { ok, status, data } = await postNest('/auth/login', body);
 
-  const nestRes = await fetch(`${NEST_API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-    cache: 'no-store',
-  });
-
-  const data = await nestRes.json();
-  if (!nestRes.ok) {
-    return NextResponse.json(data, { status: nestRes.status });
+  if (!ok) {
+    return NextResponse.json(data, { status });
   }
 
   const cookieStore = await cookies();
