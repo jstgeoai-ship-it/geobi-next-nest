@@ -7,6 +7,7 @@ import type { PbbAggregateRow } from '@geobi/shared';
 import { needlePlugin } from '../../lib/gauge-plugin';
 import { rupiahM, angka } from '../../lib/format';
 import { useTheme } from '@/lib/useTheme';
+import { useFiltersStore } from '../../store/filters.store';
 import { WalletIcon, DocumentIcon, HourglassIcon, BuildingIcon, MoreVerticalIcon } from './icons';
 
 export function GaugeCard({
@@ -20,6 +21,13 @@ export function GaugeCard({
   variant?: 'full' | 'compact';
 }) {
   const { theme } = useTheme();
+  const kelurahan = useFiltersStore((s) => s.kelurahan);
+  const rw = useFiltersStore((s) => s.rw);
+  const rt = useFiltersStore((s) => s.rt);
+  const togglePanel = useFiltersStore((s) => s.togglePanel);
+  const wilayahLabel = kelurahan
+    ? [kelurahan, rw && `RW ${rw}`, rt && `RT ${rt}`].filter(Boolean).join(', ')
+    : 'Semua Wilayah';
   const total = stats?.total ?? 0;
   const realisasiRp = Number(stats?.realisasi_rp ?? 0);
   const targetRp = Number(stats?.target_rp ?? 0);
@@ -58,8 +66,8 @@ export function GaugeCard({
             const { ctx: c, chartArea } = ctx.chart;
             if (!chartArea) return '#3b82f6';
             const gradient = c.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-            gradient.addColorStop(0, '#1d4ed8');
-            gradient.addColorStop(1, '#22d3ee');
+            gradient.addColorStop(0, '#22d3ee');
+            gradient.addColorStop(1, '#1d4ed8');
             return gradient;
           },
           data: [realisasiRp, Math.max(targetRp - realisasiRp, 0)],
@@ -99,7 +107,26 @@ export function GaugeCard({
 
   return (
     <div id="tour-gauge" className="sidebar-section" style={{ padding: '10px 16px 6px', borderBottom: 'none' }}>
-      <div className="sidebar-label" style={{ marginBottom: 4, fontSize: 11 }}>Capaian Realisasi Pembayaran PBB-P2</div>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+        <div className="periode-pill">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M8 3v4M16 3v4M3 10h18" />
+          </svg>
+          <span className="periode-pill-label">Tahun Pajak</span>
+          <span className="periode-pill-value">{tahunAktif || 'Semua'}</span>
+
+          <span className="periode-pill-divider" />
+
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 21s-7-5.686-7-11a7 7 0 1 1 14 0c0 5.314-7 11-7 11z" />
+            <circle cx="12" cy="10" r="2.5" />
+          </svg>
+          <span className="periode-pill-label">Wilayah</span>
+          <span className="periode-pill-value" style={{ maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{wilayahLabel}</span>
+        </div>
+        <div className="sidebar-label" style={{ marginBottom: 0, fontSize: 11 }}>Capaian Realisasi Pembayaran PBB-P2</div>
+      </div>
 
       <div className="chart-box" style={{ padding: '12px', marginBottom: 8 }}>
         {/* Gauge kiri, kartu icon kanan — dua kolom, bukan ditumpuk vertikal seperti sebelumnya. */}
@@ -108,23 +135,23 @@ export function GaugeCard({
             <Doughnut ref={chartRef} data={data} options={options as any} plugins={[needlePlugin]} height={150} />
             <div style={{ textAlign: 'center', marginTop: -6, pointerEvents: 'none' }}>
               <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-strong)', lineHeight: 1, letterSpacing: '-0.5px' }}>{pctReal}%</div>
-              <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: '.06em', textTransform: 'uppercase', marginTop: 4 }}>dari PBB<br />harus dibayar</div>
+              <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: '.06em', textTransform: 'uppercase', marginTop: 4 }}>Target<br />SPPT Terbit</div>
             </div>
           </div>
 
           <div className="gauge-split-cards">
             <div className="stat-tile icon-tile" style={{ '--tile-fg': 'var(--status-green-strong)', '--tile-bg': 'var(--status-green-bg)', '--tile-border': 'var(--status-green-border)' } as React.CSSProperties}>
+              <span className="icon-tile-icon"><DocumentIcon /></span>
+              <div>
+                <div className="icon-tile-label">Target SPPT</div>
+                <div className="icon-tile-value icon-tile-value--rp">{rupiahM(targetRp)}</div>
+              </div>
+            </div>
+            <div className="stat-tile icon-tile" style={{ '--tile-fg': 'var(--status-blue-strong)', '--tile-bg': 'var(--status-blue-bg)', '--tile-border': 'var(--status-blue-border)' } as React.CSSProperties}>
               <span className="icon-tile-icon"><WalletIcon /></span>
               <div>
                 <div className="icon-tile-label">Realisasi</div>
                 <div className="icon-tile-value icon-tile-value--rp">{rupiahM(realisasiRp)}</div>
-              </div>
-            </div>
-            <div className="stat-tile icon-tile" style={{ '--tile-fg': 'var(--status-blue-strong)', '--tile-bg': 'var(--status-blue-bg)', '--tile-border': 'var(--status-blue-border)' } as React.CSSProperties}>
-              <span className="icon-tile-icon"><DocumentIcon /></span>
-              <div>
-                <div className="icon-tile-label">Harus Dibayar</div>
-                <div className="icon-tile-value icon-tile-value--rp">{rupiahM(targetRp)}</div>
               </div>
             </div>
             <div className="stat-tile icon-tile" style={{ '--tile-fg': 'var(--status-amber-strong)', '--tile-bg': 'var(--status-amber-bg)', '--tile-border': 'var(--status-amber-border)' } as React.CSSProperties}>
@@ -138,11 +165,18 @@ export function GaugeCard({
         </div>
 
         <div className="sisa-progress">
-          <div className="sisa-progress-head">
-            <span className="sisa-progress-label">Sisa Pembayaran</span>
-            <span className="sisa-progress-pct">{pctReal}%</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2 }}>
+              <span className="sisa-progress-label">SPPT Sudah Realisasi</span>
+              <span className="sisa-progress-amount" style={{ color: 'var(--status-blue-strong)' }}>{rupiahM(realisasiRp)}</span>
+              <span className="sisa-progress-pct">{angka(stats?.sudah_bayar)} SPPT</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2 }}>
+              <span className="sisa-progress-label">Sisa SPPT Belum Realisasi</span>
+              <span className="sisa-progress-amount" style={{ color: 'var(--status-red-strong)' }}>{rupiahM(belumRp)}</span>
+              <span className="sisa-progress-pct">{angka(stats?.belum_bayar)} SPPT</span>
+            </div>
           </div>
-          <div className="sisa-progress-amount">{rupiahM(belumRp)}</div>
           <div className="sisa-progress-track">
             <div className="sisa-progress-fill" style={{ width: `${Math.min(100, pctReal)}%` }} />
           </div>
@@ -152,16 +186,9 @@ export function GaugeCard({
       <div className="stat-tile icon-tile total-tile">
         <span className="icon-tile-icon total-tile-icon"><BuildingIcon size={18} /></span>
         <div style={{ flex: 1 }}>
-          <div className="icon-tile-label" style={{ color: 'var(--text-muted)' }}>Total Objek PBB-P2</div>
+          <div className="icon-tile-label" style={{ color: 'var(--text-muted)' }}>Jumlah SPPT Terbit</div>
           <div className="icon-tile-value" style={{ fontSize: 16, color: 'var(--text-strong)' }}>{angka(total)}</div>
         </div>
-        <span className="total-tile-year">
-          <span style={{ fontSize: 8, display: 'block', opacity: .8 }}>Tahun Pajak</span>
-          {tahunAktif || 'Semua'}
-        </span>
-        <button type="button" className="tile-menu-btn" aria-label="Opsi lainnya">
-          <MoreVerticalIcon />
-        </button>
       </div>
     </div>
   );

@@ -3,10 +3,10 @@
 import { STATUS_OPTIONS } from '../../../store/filters.store';
 
 const LABELS: Record<string, { label: string; color: string }> = {
-  sudah: { label: 'Sudah Bayar', color: '#22c55e' },
-  belum: { label: 'Belum Bayar / Belum Lunas', color: '#ef4444' },
-  nol: { label: 'PBB Bayar 0 Rupiah', color: '#f59e0b' },
-  batal: { label: 'Di Batalkan', color: '#3b82f6' },
+  sudah: { label: 'Sudah Bayar', color: '#3b82f6' },
+  belum: { label: 'Belum Bayar / Belum Lunas', color: '#f59e0b' },
+  nol: { label: 'PBB Bayar 0 Rupiah', color: '#94a3b8' },
+  batal: { label: 'Di Batalkan', color: '#c22bd3' },
 };
 
 interface Props {

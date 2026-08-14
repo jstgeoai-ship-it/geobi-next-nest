@@ -14,10 +14,10 @@ const TABLE = 'data_tanah';
 const STATUS_COLOR: maplibregl.ExpressionSpecification = [
   'match',
   ['coalesce', ['get', 'status_pem'], ''],
-  'SUDAH BAYAR', '#22c55e',
-  'BELUM BAYAR / BELUM LUNAS', '#ef4444',
-  'PBB BAYAR 0 RUPIAH', '#f59e0b',
-  '#475569',
+  'SUDAH BAYAR', '#3b82f6',
+  'BELUM BAYAR / BELUM LUNAS', '#f59e0b',
+  'PBB BAYAR 0 RUPIAH', '#94a3b8',
+   '#475569',
 ];
 
 const LOC_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3.5"/><circle cx="12" cy="12" r="8"/><line x1="12" y1="1" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="1" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="23" y2="12"/></svg>`;

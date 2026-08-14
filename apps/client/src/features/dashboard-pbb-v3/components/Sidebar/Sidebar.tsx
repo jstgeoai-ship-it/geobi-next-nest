@@ -89,7 +89,7 @@ function TimeSeriesContent({ stats, tahunAktif }: { stats?: PbbAggregateRow; tah
         <div className="stat-card-accent" style={{ '--tile-fg': 'var(--status-amber-strong)' } as React.CSSProperties}>
           <div className="stat-card-accent-head"><HourglassIcon size={12} /><span className="stat-card-accent-label">Belum Realisasi</span></div>
           <div className="stat-card-accent-value">{formatCurrency(stats.belum_rp)}</div>
-          <div className="stat-card-accent-sub">Sisa pembayaran</div>
+          <div className="stat-card-accent-sub">Sisa SPPT Belum Realisasi</div>
         </div>
       </div>
 
@@ -184,7 +184,7 @@ export function Sidebar({ showGauge, stats, tahunAktif, error, collapsed, onTogg
                   <rect x="2.5" y="5.5" width="19" height="13" rx="2.5" />
                   <line x1="2.5" y1="9.5" x2="21.5" y2="9.5" />
                 </svg>
-                Pembayaran
+                Monitoring Pembayaran
               </button>
               <button type="button" className={`sidebar-tab-btn${tab === 'timeseries' ? ' active' : ''}`} onClick={() => setTab('timeseries')}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -195,11 +195,9 @@ export function Sidebar({ showGauge, stats, tahunAktif, error, collapsed, onTogg
               </button>
             </div>
             <button type="button" className="sidebar-close-btn" onClick={onToggleCollapsed} title="Tutup sidebar" aria-label="Tutup sidebar">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="6" width="13" height="13" rx="2.5" />
-                <path d="M8 6V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-1" />
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12.5 4.5 7 10l5.5 5.5" />
               </svg>
-              Tutup
             </button>
           </div>
 

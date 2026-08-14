@@ -13,7 +13,7 @@ const fontBody = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'GeoBI',
+  title: 'SmartMap Geospatial Business Intelligence',
   description: 'Dashboard PBB-P2 Vol. 2 (GEO BI)',
 };
 

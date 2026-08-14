@@ -4,10 +4,10 @@ import type { PbbAggregateRow } from '@geobi/shared';
 import { angka } from '../../lib/format';
 
 const TILES = [
-  { key: 'sudah_bayar' as const, label: 'Sudah Bayar', color: '#22c55e', bg: 'rgba(34,197,94,.08)', border: 'rgba(34,197,94,.22)' },
-  { key: 'belum_bayar' as const, label: 'Belum Bayar', color: '#ef4444', bg: 'rgba(239,68,68,.08)', border: 'rgba(239,68,68,.22)' },
-  { key: 'pbb_nol' as const, label: 'PBB 0 Rupiah', color: '#f59e0b', bg: 'rgba(245,158,11,.08)', border: 'rgba(245,158,11,.22)' },
-  { key: 'dibatalkan' as const, label: 'Dibatalkan', color: '#3b82f6', bg: 'rgba(59,130,246,.08)', border: 'rgba(59,130,246,.22)' },
+  { key: 'sudah_bayar' as const, label: 'Sudah Bayar', Icon: CheckCircleIcon, fg: 'var(--status-blue-strong)', bg: 'var(--status-blue-bg)', border: 'var(--status-blue-border)' },
+  { key: 'belum_bayar' as const, label: 'Belum Bayar', Icon: ClockAlertIcon, fg: 'var(--status-amber-strong)', bg: 'var(--status-amber-bg)', border: 'var(--status-amber-border)' },
+  { key: 'pbb_nol' as const, label: 'PBB 0 Rupiah', Icon: ReceiptZeroIcon, fg: '#94a3b8', bg: 'rgba(148,163,184,.14)', border: 'rgba(148,163,184,.38)' },
+  { key: 'dibatalkan' as const, label: 'Dibatalkan', Icon: BanIcon, fg: 'var(--status-purple-strong)', bg: 'var(--status-purple-bg)', border: 'var(--status-purple-border)' },
 ];
 
 export function KpiGrid({ stats }: { stats?: PbbAggregateRow }) {
