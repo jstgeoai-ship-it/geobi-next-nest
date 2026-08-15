@@ -199,18 +199,26 @@
 /* Active tab: solid gradient fill (was a flat 14%-opacity tint) — mockup wants the active
    pill to read as a real "pressed" button, not just a subtle highlight. */
 .sidebar-tab-btn.active {
-  background: linear-gradient(135deg, #2563eb, var(--accent));
-  color: #ffffff; box-shadow: 0 2px 8px var(--accent-35);
+  background: linear-gradient(90deg, #ff3b3b, #ff9d52);
+  color: #ffffff; box-shadow: 0 2px 8px rgba(255, 59, 59, .35);
 }
 .sidebar-close-btn {
-  flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
-  padding: 6px 10px; border-radius: 8px;
+  flex-shrink: 0; position: relative; display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 8px;
   background: var(--bg-inset-soft); border: 1px solid var(--border-subtle-2);
-  color: var(--text-muted); font-size: 9px; font-weight: 600; cursor: pointer;
+  color: var(--text-muted); cursor: pointer;
   transition: background .15s, color .15s;
 }
 .sidebar-close-btn:hover { background: var(--accent-10); color: var(--text-body); }
-
+.sidebar-close-btn::after {
+  content: 'Tutup';
+  position: absolute; left: 50%; top: 100%; transform: translateX(-50%) translateY(4px);
+  background: var(--bg-surface-strong); border: 1px solid var(--border-default-2);
+  color: var(--text-body); font-size: 9.5px; font-weight: 600; white-space: nowrap;
+  padding: 3px 8px; border-radius: 6px; box-shadow: 0 4px 14px var(--shadow-50);
+  opacity: 0; pointer-events: none; z-index: 40; transition: opacity .12s ease;
+}
+.sidebar-close-btn:hover::after { opacity: 1; }
 .sidebar-section { padding: 16px; border-bottom: 1px solid var(--border-faint); }
 .sidebar-label { font-family: var(--font-heading); font-size: 10px; font-weight: 700; color: var(--text-strong); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 10px; }
 
@@ -249,11 +257,19 @@
 .total-tile-icon { width: 38px; height: 38px; border-radius: 50%; color: var(--accent); background: var(--accent-16); }
 .total-tile-year {
   flex-shrink: 0; text-align: center; font-family: var(--font-accent); font-size: 13px; font-weight: 900; color: var(--accent);
-   background: var(--bg-inset); border: 0px solid var(--status-blue-border); border-radius: 8px;
-   padding: 4px 10px; line-height: 1.5;
-  background: var(--bg-inset); border: 0px solid var(--status-blue-border); border-radius: 8px;
-  padding: 4px 10px; line-height: 1.5;
+  line-height: 1.5;
 }
+
+.periode-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 10px;
+  background: var(--accent-10); border: 1px solid var(--accent-30, var(--accent-35));
+  color: var(--accent);
+}
+.periode-pill-label { font-size: 11px; color: var(--text-muted); }
+.periode-pill-value { font-size: 12.5px; font-weight: 800; color: var(--accent); }
+.periode-pill-divider { width: 1px; height: 14px; background: var(--border-default-2); margin: 0 2px; }
+
 .tile-menu-btn {
   margin-left: auto; flex-shrink: 0; width: 20px; height: 20px; border-radius: 6px; border: none;
   display: flex; align-items: center; justify-content: center; background: transparent; color: var(--text-faint);
@@ -266,7 +282,7 @@
 .sisa-progress-label { font-size: 10px; color: var(--text-muted); }
 .sisa-progress-pct { font-family: var(--font-data); font-size: 10px; font-weight: 700; color: var(--text-body); }
 .sisa-progress-amount { font-family: var(--font-data); font-size: 13px; font-weight: 800; color: var(--text-strong); margin-top: 2px; }
-.sisa-progress-track { height: 6px; border-radius: 4px; background: var(--border-faint-3); margin-top: 6px; overflow: hidden; }
+.sisa-progress-track { height: 6px; border-radius: 4px; background: #ef4444; margin-top: 6px; overflow: hidden; }
 .sisa-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #2563eb, var(--accent)); transition: width .5s ease; }
 
 .kpi-tile { display: flex; flex-direction: column; gap: 5px; padding: 10px 10px; align-items: stretch; text-align: left; border-radius: 12px; box-shadow: 0 1px 2px var(--shadow-40); }
@@ -377,7 +393,7 @@
    clean — but it was permanent, so it also clipped .float-panel-dropdown, which is an
    absolutely-positioned child that intentionally renders outside this 50px-tall box. Once a
    panel is open we switch to overflow:visible so the dropdown can actually show. */
-.panel-btn-wrap.panel-btn-open { overflow: visible; }
+.panel-btn-wrap:hover { overflow: visible; }
 .panel-btn-wrap:first-child .panel-icon-btn { border-top-left-radius: 22px; border-top-right-radius: 22px; }
 .panel-btn-wrap:last-child .panel-icon-btn { border-bottom-left-radius: 22px; border-bottom-right-radius: 22px; }
 .panel-icon-btn {
@@ -623,6 +639,7 @@
 }
 .wilayah-chart-card {
   position: relative;
+  min-height: 42px;
   background: var(--bg-surface-strong); border: 1px solid var(--accent-35);
   border-radius: 10px; box-shadow: 0 8px 28px var(--shadow-55);
   overflow: hidden;
@@ -645,12 +662,22 @@
 }
 .wilayah-chart-tab.active { background: linear-gradient(135deg, #2563eb, var(--accent)); color: #ffffff; box-shadow: 0 2px 8px var(--accent-35); }
 
-.wilayah-chart-toggle {
+.wilayah-chart-head-label {
+  position: absolute; top: 8px; left: 12px; z-index: 1;
+  font-size: 10.5px; font-weight: 700; color: var(--text-body);
+  text-transform: uppercase; letter-spacing: .04em;
+}
+
+.wilayah-chart-toolbar {
   position: absolute; top: 8px; right: 8px; z-index: 1;
+  display: flex; align-items: center; gap: 6px;
+}
+
+.wilayah-chart-toggle {
   flex-shrink: 0; width: 26px; height: 26px; border-radius: 6px;
   display: flex; align-items: center; justify-content: center;
-  background: var(--bg-inset-soft); border: 1px solid var(--border-subtle-2);
-  color: var(--text-muted); cursor: pointer; transition: background .15s, color .15s;
+  background: var(--accent-14); border: 0px solid var(--accent-40);
+  color: var(--accent); cursor: pointer; transition: background .15s, color .15s;
 }
 .wilayah-chart-toggle:hover { background: var(--accent-10); color: var(--text-body); }
 

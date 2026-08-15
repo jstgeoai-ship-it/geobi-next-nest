@@ -7,13 +7,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuthUser } from '@/lib/useAuthUser';
 import { useTheme } from '@/lib/useTheme';
+import { SettingsModal } from '@/components/settings/SettingsModal';
 
 export function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: user } = useAuthUser();
-  const { theme } = useTheme();
+  const { theme, setTheme } = useTheme();
+  const [modalTab, setModalTab] = useState<'profile' | '/settings' | null>(null);
   const [pembayaranOpen, setPembayaranOpen] = useState(false);
   const [penilaianOpen, setPenilaianOpen] = useState(false);
   const [pendataanOpen, setPendataanOpen] = useState(false);
@@ -430,14 +432,14 @@ export function Navbar() {
                 {accountOpen && (
                   <div className="absolute right-0 top-full pt-2 z-50" style={{ minWidth: 170 }}>
                     <div className="bg-slate-900 light:bg-slate-50 border border-white/10 light:border-gray-200 rounded-xl shadow-2xl overflow-hidden">
-                      <Link href="/profile" className="block px-4 py-2.5 text-xs text-[var(--pub-text)]/80 light:text-[var(--pub-muted-3)] hover:bg-white/5 light:hover:bg-gray-900/5 hover:text-[var(--pub-text)] light:hover:text-[var(--pub-text)] transition-colors">
+                      <button type="button" onClick={() => { setAccountOpen(false); setModalTab('profile'); }} className="block w-full text-left px-3.5 py-2 text-[11px] text-[var(--pub-text)]/80 light:text-[var(--pub-muted-3)] hover:bg-white/5 light:hover:bg-gray-900/5 hover:text-[var(--pub-text)] light:hover:text-[var(--pub-text)] transition-colors">
                         Profile
-                      </Link>
-                      <Link href="/settings" className="block px-4 py-2.5 text-xs text-[var(--pub-text)]/80 light:text-[var(--pub-muted-3)] hover:bg-white/5 light:hover:bg-gray-900/5 hover:text-[var(--pub-text)] light:hover:text-[var(--pub-text)] transition-colors">
+                      </button>
+                      <button type="button" onClick={() => { setAccountOpen(false); setModalTab('/settings'); }} className="block w-full text-left px-3.5 py-2 text-[11px] text-[var(--pub-text)]/80 light:text-[var(--pub-muted-3)] hover:bg-white/5 light:hover:bg-gray-900/5 hover:text-[var(--pub-text)] light:hover:text-[var(--pub-text)] transition-colors">
                         Settings
-                      </Link>
+                      </button>
                       <div className="h-px bg-white/5 light:bg-gray-900/10 mx-2" />
-                      <button type="button" onClick={handleLogout} className="w-full text-left px-4 py-2.5 text-xs text-red-400 hover:bg-red-400/10 transition-colors">
+                      <button type="button" onClick={handleLogout} className="w-full text-left px-3.5 py-2 text-[11px] text-red-400 hover:bg-red-400/10 transition-colors">
                         Logout
                       </button>
                     </div>
@@ -511,6 +513,7 @@ export function Navbar() {
           </div>
         </div>
       )}
+      <SettingsModal open={modalTab !== null} initialTab={modalTab ?? '/settings'} onClose={() => setModalTab(null)} />
     </nav>
   );
 }

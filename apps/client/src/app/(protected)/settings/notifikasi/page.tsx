@@ -24,7 +24,6 @@ export default function NotifikasiPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <SettingsCard title="Kanal Notifikasi">
           <div className="divide-y divide-white/5 light:divide-gray-100">
-            <ToggleRow label="In-App Notification" hint="Terima notifikasi di dalam aplikasi" checked={inApp} onChange={setInApp} />
             <ToggleRow label="Email" hint="Terima notifikasi melalui email" checked={email} onChange={setEmail} />
             <ToggleRow label="Push Notification" hint="Terima notifikasi di browser" checked={push} onChange={setPush} />
           </div>
@@ -32,7 +31,6 @@ export default function NotifikasiPage() {
 
         <SettingsCard title="Jenis Notifikasi">
           <div className="divide-y divide-white/5 light:divide-gray-100">
-            <ToggleRow label="Pembayaran berhasil" checked={pembayaran} onChange={setPembayaran} />
             <ToggleRow label="Sinkronisasi data selesai" checked={syncSelesai} onChange={setSyncSelesai} />
             <ToggleRow label="Sinkronisasi data gagal" checked={syncGagal} onChange={setSyncGagal} />
             <ToggleRow label="Perubahan data" checked={perubahanData} onChange={setPerubahanData} />

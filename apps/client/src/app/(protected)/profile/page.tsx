@@ -21,7 +21,7 @@ function Card({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ProfileInformationForm() {
+export function ProfileInformationForm() {
   const { data: user } = useAuthUser();
   const queryClient = useQueryClient();
   const [name, setName] = useState('');
@@ -81,7 +81,7 @@ function ProfileInformationForm() {
   );
 }
 
-function UpdatePasswordForm() {
+export function UpdatePasswordForm() {
   const [currentPassword, setCurrentPassword] = useState('');
   const [password, setPassword] = useState('');
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
@@ -143,7 +143,7 @@ function UpdatePasswordForm() {
   );
 }
 
-function DeleteUserForm() {
+export function DeleteUserForm() {
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
   const [password, setPassword] = useState('');

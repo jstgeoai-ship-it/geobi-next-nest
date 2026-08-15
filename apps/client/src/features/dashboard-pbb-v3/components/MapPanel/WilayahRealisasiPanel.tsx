@@ -181,19 +181,19 @@ export function WilayahRealisasiPanel({ onZoomToWilayah }: Props) {
             <span />
           </div>
         )}
-
-        <button
-          type="button"
-          className="wilayah-chart-toggle"
-          onClick={() => setMinimized((m) => !m)}
-          title={minimized ? 'Maximize' : 'Minimize'}
-          aria-label={minimized ? 'Maximize chart' : 'Minimize chart'}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-            {minimized ? <polyline points="6 9 12 15 18 9" /> : <line x1="6" y1="12" x2="18" y2="12" />}
-          </svg>
-        </button>
-
+        <div className="wilayah-chart-toolbar">
+          <button
+            type="button"
+            className="wilayah-chart-toggle"
+            onClick={() => setMinimized((m) => !m)}
+            title={minimized ? 'Maximize' : 'Minimize'}
+            aria-label={minimized ? 'Maximize chart' : 'Minimize chart'}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
+              {minimized ? <polyline points="6 9 12 15 18 9" /> : <line x1="6" y1="12" x2="18" y2="12" />}
+            </svg>
+          </button>
+        </div>
         {!minimized && (
           <div className="wilayah-chart-yearrange">
             <span className="wilayah-chart-yearrange-label">Tahun Pajak</span>
@@ -204,10 +204,6 @@ export function WilayahRealisasiPanel({ onZoomToWilayah }: Props) {
             <select value={tahunAkhir} onChange={(e) => setTahunAkhir(e.target.value)}>
               {daftarTahun.map((th) => <option key={th} value={th}>{th}</option>)}
             </select>
-            <button type="button" className="wilayah-chart-download-btn" onClick={handleDownloadCsv} title="Unduh data sebagai CSV">
-              <DownloadIcon />
-              Unduh
-            </button>
           </div>
         )}
 

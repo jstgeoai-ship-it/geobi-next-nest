@@ -37,25 +37,6 @@ export default function KeamananPage() {
         </div>
         <button type="button" className="mt-4 text-xs font-medium text-cyan-400 hover:underline">Lihat Semua Sesi (3) →</button>
       </SettingsCard>
-
-      <SettingsCard title="Verifikasi 2 Langkah (2FA)" className="md:col-span-2">
-        <div className="flex items-center justify-between max-w-2xl">
-          <div>
-            <p className="text-sm text-[var(--pub-text)]">Tambahkan lapisan keamanan tambahan untuk akun Anda.</p>
-            <div className="mt-2 flex items-center gap-2">
-              <span className="text-xs text-[var(--pub-muted-2)]">Status</span>
-              <Badge tone={twoFA ? 'green' : 'amber'}>{twoFA ? 'Aktif' : 'Belum aktif'}</Badge>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => setTwoFA(true)}
-            className="rounded-lg bg-cyan-500 hover:bg-cyan-400 text-white text-sm font-medium px-4 py-2 transition-colors shrink-0"
-          >
-            Aktifkan 2FA
-          </button>
-        </div>
-      </SettingsCard>
     </div>
   );
 }
