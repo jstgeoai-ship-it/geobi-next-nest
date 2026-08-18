@@ -12,14 +12,10 @@ export function DonutChart({ stats }: { stats?: PbbAggregateRow }) {
   const belum = stats?.belum_bayar ?? 0;
   const nol = stats?.pbb_nol ?? 0;
   const batal = stats?.dibatalkan ?? 0;
-  const total = stats?.total ?? 0;
   const realisasiRp = Number(stats?.realisasi_rp ?? 0);
   const belumRp = Number(stats?.belum_rp ?? 0);
   const batalRp = Number(stats?.batal_rp ?? 0);
 
-  // Chart.js renders to <canvas>, jadi gak bisa baca CSS var(--bg-surface) langsung — warna
-  // "celah" antar slice ini perlu senada dengan background sidebar di tema aktif, biar
-  // nyatu bukannya kelihatan ada garis gelap nyeruduk pas light mode.
   const segmentGap = theme === 'light' ? '#f2f4f7' : '#0a0f1e';
 
   const data = useMemo(
@@ -45,22 +41,12 @@ export function DonutChart({ stats }: { stats?: PbbAggregateRow }) {
         legend: { display: false },
         tooltip: {
           padding: 10,
+          displayColors: false,
           callbacks: {
-            title: (items: any[]) => {
-              if (!items.length) return '';
-              const i = items[0].dataIndex;
-              const n = [sudah, belum, nol, batal][i] || 0;
-              const pct = total > 0 ? Math.round((n / total) * 1000) / 10 : 0;
-              return `${items[0].label} (${pct}%)`;
-            },
+            title: () => '',
             label: (ctx: any) => {
-              const info = [
-                { rpLabel: 'Jumlah dibayar', rp: realisasiRp },
-                { rpLabel: 'Jumlah belum dibayar', rp: belumRp },
-                { rpLabel: 'Jumlah dibayar', rp: 0 },
-                { rpLabel: 'Jumlah dibatalkan', rp: batalRp },
-              ][ctx.dataIndex] || { rpLabel: 'Jumlah dibayar', rp: 0 };
-              return `${info.rpLabel}: ${rupiahM(info.rp)}`;
+              const rp = [realisasiRp, belumRp, 0, batalRp][ctx.dataIndex] ?? 0;
+              return rupiahM(rp);
             },
           },
         },
@@ -68,7 +54,7 @@ export function DonutChart({ stats }: { stats?: PbbAggregateRow }) {
       animation: { animateRotate: true, duration: 800 },
       maintainAspectRatio: false,
     }),
-    [sudah, belum, nol, batal, total, realisasiRp, belumRp, batalRp],
+    [realisasiRp, belumRp, batalRp],
   );
 
   return (

@@ -38,14 +38,9 @@ export function DonutChart({ stats }: { stats?: PbbAggregateRow }) {
         legend: { display: false },
         tooltip: {
           padding: 10,
+          displayColors: false,
           callbacks: {
-            title: (items: any[]) => {
-              if (!items.length) return '';
-              const i = items[0].dataIndex;
-              const n = [sudah, belum, nol, batal][i] || 0;
-              const pct = total > 0 ? Math.round((n / total) * 1000) / 10 : 0;
-              return `${items[0].label} (${pct}%)`;
-            },
+            title: () => '',
             label: (ctx: any) => {
               const info = [
                 { rpLabel: 'Jumlah dibayar', rp: realisasiRp },
@@ -53,7 +48,7 @@ export function DonutChart({ stats }: { stats?: PbbAggregateRow }) {
                 { rpLabel: 'Jumlah dibayar', rp: 0 },
                 { rpLabel: 'Jumlah dibatalkan', rp: batalRp },
               ][ctx.dataIndex] || { rpLabel: 'Jumlah dibayar', rp: 0 };
-              return `${info.rpLabel}: ${rupiahM(info.rp)}`;
+              return rupiahM(info.rp);
             },
           },
         },

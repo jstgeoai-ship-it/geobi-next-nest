@@ -45,11 +45,12 @@ export function DistribusiPembayaran({ stats }: { stats?: PbbAggregateRow }) {
         legend: { display: false },
         tooltip: {
           padding: 10,
+          displayColors: false,
           callbacks: {
+            title: () => '',
             label: (ctx: any) => {
-              const n = values[ctx.dataIndex] ?? 0;
-              const pct = pctOf(n, total);
-              return `${ctx.label}: ${n.toLocaleString('id-ID')} (${pct}%)`;
+               const row = ROWS[ctx.dataIndex];
+              return row.rpKey ? rupiahM(stats?.[row.rpKey] ?? 0) : 'Rp 0';
             },
           },
         },

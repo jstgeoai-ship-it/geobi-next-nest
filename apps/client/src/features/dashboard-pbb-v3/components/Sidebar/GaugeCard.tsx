@@ -189,6 +189,10 @@ export function GaugeCard({
           <div className="icon-tile-label" style={{ color: 'var(--text-muted)' }}>Jumlah SPPT Terbit</div>
           <div className="icon-tile-value" style={{ fontSize: 16, color: 'var(--text-strong)' }}>{angka(total)}</div>
         </div>
+        <div style={{ textAlign: 'right' }}>
+          <div className="icon-tile-label" style={{ color: 'var(--text-muted)' }}>PBB Harus Bayar (Target SPPT)</div>
+          <div className="icon-tile-value icon-tile-value--rp" style={{ fontSize: 16, color: 'var(--text-strong)' }}>{rupiahM(targetRp)}</div>
+        </div>
       </div>
     </div>
   );

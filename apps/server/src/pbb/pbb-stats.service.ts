@@ -81,6 +81,11 @@ export class PbbStatsService {
     tahunAwal?: string | number,
     tahunAkhir?: string | number,
   ): Promise<WilayahRealisasiRow[]> {
+     // Normalisasi urutan — biar user pilih 2026 s/d 2024 atau 2024 s/d 2026, hasilnya sama
+    // (query di bawah selalu butuh yang lebih kecil duluan).
+    if (tahunAwal && tahunAkhir && Number(tahunAwal) > Number(tahunAkhir)) {
+      [tahunAwal, tahunAkhir] = [tahunAkhir, tahunAwal];
+    }
     const column = WILAYAH_GROUP_COLUMNS[groupBy];
     const clauses = [`${column} IS NOT NULL`, `${column} <> ''`];
     const params: unknown[] = [];
