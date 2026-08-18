@@ -307,10 +307,23 @@ export function useDashboardMap(
 
     map.on('click', 'tanah-fill', (e) => {
       if (!e.features?.length) return;
-      new maplibregl.Popup({ offset: 6, maxWidth: '340px' })
-        .setLngLat(e.lngLat)
-        .setHTML(persilPopupHTML(e.features[0].properties))
-        .addTo(map);
+      const feature = e.features[0];
+
+      // Geser peta dulu biar bidang yang diklik naik ke area atas viewport (offset y negatif
+      // = target dirender di ATAS titik tengah kontainer), nyisain ruang di tengah-bawah buat
+      // popup-nya nempel — biar bidang & popup keliatan bareng, gak numpuk/ketutupan.
+      map.flyTo({ center: e.lngLat, offset: [0, -130], duration: 500 });
+
+      map.once('moveend', () => {
+        const container = map.getContainer();
+        // Titik tengah GEOGRAFIS layar (bukan e.lngLat lagi) — ini yang bikin popup-nya
+        // beneran ke-render pas di tengah viewport, bukan di titik klik.
+        const centerLngLat = map.unproject([container.clientWidth / 2, container.clientHeight / 2]);
+        new maplibregl.Popup({ maxWidth: '340px', draggable: true })
+          .setLngLat(centerLngLat)
+          .setHTML(persilPopupHTML(feature.properties))
+          .addTo(map);
+      });
     });
 
     let hoveredKelId: string | number | null = null;

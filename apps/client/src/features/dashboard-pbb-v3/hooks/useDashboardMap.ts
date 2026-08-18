@@ -311,10 +311,22 @@ export function useDashboardMap(
 
     map.on('click', 'tanah-fill', (e) => {
       if (!e.features?.length) return;
-      new maplibregl.Popup({ offset: 6, maxWidth: '340px' })
-        .setLngLat(e.lngLat)
-        .setHTML(persilPopupHTML(e.features[0].properties))
-        .addTo(map);
+      const feature = e.features[0];
+
+      // #sidebar itu overlay absolute DI ATAS peta (bukan bikin canvas map jadi sempit),
+      // jadi "tengah" yang user lihat itu tengah dari area SETELAH sidebar, bukan tengah
+      // canvas penuh — makanya lebar sidebar (kalau lagi kebuka) dikurangin dari perhitungan.
+      const sidebarEl = document.getElementById('sidebar');
+      const sidebarWidth = sidebarEl?.getBoundingClientRect().width ?? 0;
+
+      map.flyTo({ center: e.lngLat, offset: [sidebarWidth / 2, -130], duration: 500 });
+
+      map.once('moveend', () => {
+        new maplibregl.Popup({ offset: 6, maxWidth: '340px', draggable: true })
+          .setLngLat(e.lngLat)
+          .setHTML(persilPopupHTML(feature.properties))
+          .addTo(map);
+      });
     });
 
     let hoveredKelId: string | number | null = null;

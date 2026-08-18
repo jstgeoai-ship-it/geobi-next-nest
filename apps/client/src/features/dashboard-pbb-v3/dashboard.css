@@ -517,10 +517,10 @@
 .pop-head { padding: 10px 14px 8px; border-bottom: 1px solid var(--border-faint-3); }
 .pop-badge { display: inline-block; font-family: var(--font-accent); font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-top: 4px; }
 .pop-body { padding: 8px 14px 12px; }
-.pop-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; font-size: 11px; padding: 3px 0; border-bottom: 1px solid var(--border-faint); }
+.pop-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; font-size: 10px; padding: 2px 0; line-height: 1.25; border-bottom: 1px solid var(--border-faint); }
 .pop-row:last-child { border-bottom: none; }
-.pop-k { color: var(--text-strong); font-weight: 700; flex-shrink: 0; }
-.pop-v { color: var(--text-body); font-weight: 700; text-align: right; }
+.pop-k { color: var(--text-strong); font-weight: 500; flex-shrink: 0; }
+.pop-v { color: var(--text-body); font-weight: 400; text-align: right; }
 
 .tb-section { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-subtle); }
 .tb-header { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
@@ -647,13 +647,15 @@
 
 /* RT/RW tab — a normal, fully-bordered pill sitting just above the card with a small gap
    (not merged into the card's own border), so it reads as its own standalone box. */
-.wilayah-chart-tab-float {
-  position: absolute; top: -38px; left: 14px; z-index: 1;
-  display: flex; gap: 0;
+.wilayah-chart-toprow {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 10px 12px 8px;
+}
+.wilayah-chart-tab-inline {
+  display: inline-flex; gap: 0; flex-shrink: 0;
   background: var(--bg-inset);
   border: 1px solid var(--accent-40);
   border-radius: 8px; padding: 3px;
-  box-shadow: 0 4px 14px var(--shadow-40);
 }
 .wilayah-chart-tab {
   border: none; background: transparent; cursor: pointer;
@@ -669,7 +671,7 @@
 }
 
 .wilayah-chart-toolbar {
-  position: absolute; top: 8px; right: 8px; z-index: 1;
+  margin-left: auto; flex-shrink: 0;
   display: flex; align-items: center; gap: 6px;
 }
 
@@ -695,7 +697,7 @@
 
 /* This chart's own Tahun Pajak Awal/Akhir range — topmost content row, deliberately not the
    same control as the main Filter Waktu icon (see useWilayahRealisasi). */
-.wilayah-chart-yearrange { display: flex; align-items: center; gap: 8px; padding: 10px 90px 8px 14px; }
+.wilayah-chart-yearrange { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .wilayah-chart-yearrange-label { font-size: 10px; font-weight: 700; color: var(--text-strong); text-transform: uppercase; letter-spacing: .06em; }
 .wilayah-chart-download-btn {
   display: inline-flex; align-items: center; gap: 4px;

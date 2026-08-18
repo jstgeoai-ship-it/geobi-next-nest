@@ -43,6 +43,8 @@ export function SudahBelumDonut({ stats }: { stats?: PbbAggregateRow }) {
         legend: { display: false },
         tooltip: {
           padding: 8,
+          titleFont: { size: 9 },
+          bodyFont: { size: 9 },
           callbacks: {
             label: (ctx: any) => {
               const n = ctx.dataIndex === 0 ? sudah : belum;
