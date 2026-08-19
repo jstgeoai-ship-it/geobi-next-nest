@@ -36,6 +36,9 @@ export function DashboardPbbV3() {
 
   return (
     <div className="dashboard-root">
+       <div className="dashboard-narrow-warning">
+        ⚠️ Layar/jendela browser kamu terlalu sempit buat dashboard ini — lebar minimal 1100px. Perbesar window atau keluar dari mode split-screen.
+      </div>
       <Navbar />
       <div id="workspace">
         <Sidebar

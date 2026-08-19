@@ -133,7 +133,7 @@ export function GaugeCard({
         <div className="gauge-split">
           <div className="gauge-split-chart">
             <Doughnut ref={chartRef} data={data} options={options as any} plugins={[needlePlugin]} height={150} />
-            <div style={{ textAlign: 'center', marginTop: -6, pointerEvents: 'none' }}>
+            <div style={{ textAlign: 'center', marginTop: 10, pointerEvents: 'none' }}>
               <div style={{ fontSize: 22, fontWeight: 800, color: 'var(--text-strong)', lineHeight: 1, letterSpacing: '-0.5px' }}>{pctReal}%</div>
               <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: '.06em', textTransform: 'uppercase', marginTop: 4 }}>Target<br />SPPT Terbit</div>
             </div>
